@@ -17,18 +17,26 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
 
   import DashboardCharts from './DashboardCharts.vue'
   import DashboardInfoBlock from './DashboardInfoBlock.vue'
   import DashboardTabs from './DashboardTabs.vue'
   import DashboardMap from './DashboardMap.vue'
+  import ncbiService from '../../../services/clients/NCBIClientService'
 
   const dashboardMap = ref()
 
+  const assemblies = ref([])
   function addAddressToMap({ city, country }: { city: { text: string }; country: string }) {
     dashboardMap.value.addAddress({ city: city.text, country })
   }
+  const fetchData = () => {
+    ncbiService.getAssembliesByBioProject('PRJNA533106').then((resp) => {
+      console.log(resp.data)
+    })
+  }
+  onMounted(fetchData)
 </script>
 
 <style lang="scss">
