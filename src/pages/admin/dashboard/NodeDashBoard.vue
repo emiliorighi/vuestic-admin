@@ -1,10 +1,8 @@
 <template>
   <div class="dashboard">
-    <dashboard-info-block />
+    <dashboard-charts />
 
-    <Suspense>
-      <dashboard-charts />
-    </Suspense>
+    <dashboard-info-block />
 
     <div class="row row-equal">
       <div class="flex xs12 lg6">
@@ -25,12 +23,20 @@
   import DashboardInfoBlock from './DashboardInfoBlock.vue'
   import DashboardTabs from './DashboardTabs.vue'
   import DashboardMap from './DashboardMap.vue'
+  import ncbiService from '../../../services/clients/NCBIClientService'
 
   const dashboardMap = ref()
 
+  const assemblies = ref([])
   function addAddressToMap({ city, country }: { city: { text: string }; country: string }) {
     dashboardMap.value.addAddress({ city: city.text, country })
   }
+  const fetchData = () => {
+    ncbiService.getAssembliesByBioProject('PRJNA533106').then((resp) => {
+      console.log(resp.data)
+    })
+  }
+  onMounted(fetchData)
 </script>
 
 <style lang="scss">

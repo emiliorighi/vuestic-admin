@@ -17,10 +17,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     component: Home,
   },
-  // {
-  //   name: ''
-
-  // },
   {
     name: 'admin',
     path: '/admin',
@@ -30,6 +26,21 @@ const routes: Array<RouteRecordRaw> = [
         name: 'dashboard',
         path: 'dashboard',
         component: () => import('../pages/admin/dashboard/Dashboard.vue'),
+      },
+      {
+        name: 'bioprojects',
+        path: 'bioprojects',
+        component: () => import('../pages/bioprojects/BioProjects.vue'),
+      },
+      {
+        name: 'taxons',
+        path: 'taxons',
+        component: () => import('../pages/taxons/Taxon.vue'),
+      },
+      {
+        name: 'assemblies',
+        path: 'assemblies',
+        component: () => import('../pages/assemblies/Assembly.vue'),
       },
       {
         name: 'statistics',

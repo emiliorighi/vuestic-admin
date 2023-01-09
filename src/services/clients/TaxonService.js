@@ -12,6 +12,9 @@ class TaxonService {
   getTaxonCoordinates(params) {
     return base.get('/coordinates/node', { params: params })
   }
+  getTree(node) {
+    return base.get(`/tree/${node}`)
+  }
 }
 
 export default new TaxonService()

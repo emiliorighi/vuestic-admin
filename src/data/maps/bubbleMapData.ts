@@ -2003,12 +2003,42 @@ export const bubbleMapData = {
   data,
 }
 
+export const returnColors = (size: number) => {
+  if (size > data.length) return
+  return data.splice(0, size).map((d) => d.color)
+}
+
 export const getValueBounds = (items: CountryItem[]) => {
   const values = items.map(({ value }) => value)
   return {
     min: Math.min(...values),
     max: Math.max(...values),
   }
+}
+import * as d3 from 'd3'
+
+export const coordinatesPerCountry = (
+  worldCountries: Array<Record<string, unknown>>,
+  coordinates: Array<Record<string, unknown>>,
+) => {
+  const colors = data.map((d) => d.color)
+  return worldCountries
+    .map((ft, index) => {
+      let count = 0
+      coordinates.forEach((pointFt) => {
+        if (d3.geoContains(ft, pointFt.geometry.coordinates)) {
+          count++
+        }
+      })
+
+      return {
+        code: ft.id,
+        name: ft.properties.name,
+        value: count,
+        color: colors[index] ? colors[index] : '#e96e6e',
+      }
+    })
+    .filter((ft) => ft.value > 0)
 }
 
 export const getItemRadius = (item: CountryItem, values: ValueBounds, squares: ValueBounds) => {

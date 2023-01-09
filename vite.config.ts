@@ -2,21 +2,21 @@ import vue from '@vitejs/plugin-vue'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'url'
 import VueI18nPlugin from '@intlify/vite-plugin-vue-i18n'
-import { defineConfig,loadEnv } from 'vite'
-import cesium from 'vite-plugin-cesium';
+import { defineConfig, loadEnv } from 'vite'
+import cesium from 'vite-plugin-cesium'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
-import pluginRewriteAll from 'vite-plugin-rewrite-all';
+import pluginRewriteAll from 'vite-plugin-rewrite-all'
 
 export default ({ mode }) => {
-  const env  = loadEnv(mode, process.cwd());
+  const env = loadEnv(mode, process.cwd())
 
   // import.meta.env.VITE_NAME available here with: process.env.VITE_NAME
   // import.meta.env.VITE_PORT available here with: process.env.VITE_PORT
 
   return defineConfig({
-    base: env.VITE_BASE_PATH ? env.VITE_BASE_PATH:'/',
+    base: env.VITE_BASE_PATH ? env.VITE_BASE_PATH : '/',
     resolve: {
       alias: {
         stream: 'stream-browserify',
@@ -56,6 +56,4 @@ export default ({ mode }) => {
       }),
     ],
   })
-
 }
-

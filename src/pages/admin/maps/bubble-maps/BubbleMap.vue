@@ -9,15 +9,27 @@
   import am5geodata_worldLow from '@amcharts/amcharts5-geodata/worldLow'
   import am5themes_Animated from '@amcharts/amcharts5/themes/Animated'
   import { useColors } from 'vuestic-ui'
+  import * as d3 from 'd3'
+  import CoordinatesService from '../../../../services/clients/CoordinatesService'
 
-  import { PointGeoCoord, CountryItem, getValueBounds, getItemRadius } from '../../../../data/maps/bubbleMapData'
+  import {
+    PointGeoCoord,
+    CountryItem,
+    getValueBounds,
+    getItemRadius,
+    coordinatesPerCountry,
+  } from '../../../../data/maps/bubbleMapData'
 
   const bulletSizes = { min: 3, max: 30 }
 
+  const coordinates = await CoordinatesService.getCoordinates({ parent_taxid: 2759 })
+
+  const filteredCountries = coordinatesPerCountry(am5geodata_worldLow.features, coordinates.data.features)
+
   const titleHTML = `
   <div style="text-align: center">
-    <h2 style="font-size: 16px; margin-bottom: 8px">Population of the World in 2011</h2>
-    <p style="font-size: 12px">source: Gapminder</p>
+    <h2 style="font-size: 16px; margin-bottom: 8px">Organisms collected in countries</h2>
+    <p style="font-size: 12px">source: INSDC</p>
   <div>`
 
   const props = defineProps<{
@@ -37,7 +49,7 @@
   const mapZoomControl = shallowRef()
 
   const pointData = computed(() =>
-    props.mapData.data.map((country) => ({
+    filteredCountries.map((country) => ({
       ...country,
       ...props.mapData.latLng[country.code],
     })),
@@ -63,7 +75,6 @@
     )
 
     const zoomControl = chart.set('zoomControl', am5map.ZoomControl.new(root, {}))
-
     // polygon series
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
@@ -98,7 +109,6 @@
 
     pointSeries.bullets.push((root, series, dataItem) => {
       const itemData = dataItem.dataContext as CountryItem
-
       return am5.Bullet.new(root, {
         sprite: am5.Circle.new(root, {
           radius: getItemRadius(itemData, valueBounds.value, bulletBounds.value),

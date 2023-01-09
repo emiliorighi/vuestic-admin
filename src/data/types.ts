@@ -11,3 +11,29 @@ export type TDoughnutChartData = ChartData<'doughnut'>
 export type TPieChartData = ChartData<'pie'>
 
 export type TChartData = TLineChartData | TBarChartData | TBubbleChartData | TDoughnutChartData | TPieChartData
+
+interface Node {
+  children: Array<string>
+  leaves: number
+  assemblies?: number
+  biosamples?: number
+  experiments?: number
+  local_samples?: number
+  annotations?: number
+}
+
+export interface BioProjectNode extends Node {
+  title: string
+  accession: string
+}
+
+export interface TaxonNode extends Node {
+  name: string
+  rank: string
+  taxid: string
+}
+
+export type Contributor = {
+  contributions?: number
+  name: string
+}

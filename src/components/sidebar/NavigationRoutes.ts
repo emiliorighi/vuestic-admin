@@ -19,6 +19,27 @@ export default {
       },
     },
     {
+      name: 'bioprojects',
+      displayName: 'menu.bioprojects',
+      meta: {
+        icon: 'science',
+      },
+    },
+    {
+      name: 'taxons',
+      displayName: 'menu.taxons',
+      meta: {
+        icon: 'pets',
+      },
+    },
+    {
+      name: 'assemblies',
+      displayName: 'menu.assemblies',
+      meta: {
+        icon: 'library_books',
+      },
+    },
+    {
       name: 'statistics',
       displayName: 'menu.statistics',
       meta: {

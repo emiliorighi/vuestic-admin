@@ -4,7 +4,7 @@ const base = http.base
 
 class StatsService {
   getModelFieldStats(model, params) {
-    return base.get(`/${model}`, { params: params })
+    return base.get(`/stats/${model}`, { params: params })
   }
 }
 

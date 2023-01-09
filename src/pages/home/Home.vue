@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100vh" class="row justify-center align-center">
+  <div style="margin-top: 20vh" class="row justify-center align-center">
     <div class="flex lg12 md12 sm12 xs12">
       <div class="row justify-center align-start inner-padding">
         <div class="flex lg4 md4">
@@ -46,7 +46,7 @@
             {{ selectedNode?.name === 'taxons' ? 'taxon' : 'bioproject' }}
           </va-card-content>
           <va-inner-loading :loading="isLoading" :size="60">
-            <div style="height: 50vh; overflow: auto">
+            <div>
               <va-tree-view
                 :nodes="tree.root"
                 :track-by="activeTab === 'taxons' ? 'taxid' : 'accession'"

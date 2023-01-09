@@ -292,6 +292,15 @@
   },
   "menu": {
     "auth": "Auth",
+
+    "bioprojects":"BioProjects",
+    "taxons":"Taxons",
+    "biosamples":"BioSamples",
+    "local_samples":"Local Samples",
+    "experiments":"Reads",
+    "organisms":"Organisms",
+
+
     "rating": "Rating",
     "buttons": "Buttons",
     "charts": "Charts",
