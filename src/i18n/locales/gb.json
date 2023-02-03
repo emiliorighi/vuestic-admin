@@ -293,13 +293,13 @@
   "menu": {
     "auth": "Auth",
 
-    "bioprojects":"BioProjects",
-    "taxons":"Taxons",
-    "biosamples":"BioSamples",
-    "local_samples":"Local Samples",
-    "experiments":"Reads",
-    "organisms":"Organisms",
-
+    "bioprojects": "BioProjects",
+    "taxons": "Taxons",
+    "assemblies" : "Assemblies",
+    "biosamples": "BioSamples",
+    "local_samples": "Local Samples",
+    "reads": "Reads",
+    "organisms": "Organisms",
 
     "rating": "Rating",
     "buttons": "Buttons",

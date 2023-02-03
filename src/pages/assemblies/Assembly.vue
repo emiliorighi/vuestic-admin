@@ -2,65 +2,142 @@
   <div>
     <div class="row row-equal">
       <div class="flex lg3 md3 sm12 xs12">
-        <va-card class="d-flex">
-          <va-card-title>
-            <h1>assembly level</h1>
-            <va-button icon="print" plain @click="printChart" />
-          </va-card-title>
-          <va-card-content v-if="assemblyLevelData">
-            <va-chart ref="doughnutChart" class="chart chart--donut" :data="assemblyLevelData" type="doughnut" />
-          </va-card-content>
-        </va-card>
+        <Suspense>
+          <AssemblyLevelChart />
+        </Suspense>
       </div>
       <div class="flex lg6 md6 sm12 xs12">
-        <va-card v-if="assembliesPublished" class="chart-widget">
-          <va-card-title>Assemblies submitted by month</va-card-title>
-          <va-card-content>
-            <va-chart class="chart" :data="assembliesPublished" type="line" />
-          </va-card-content>
-        </va-card>
+        <Suspense>
+          <AssemblyDateChart />
+        </Suspense>
       </div>
-      <div v-if="assembliesContributors?.length" class="flex lg3 md3 sm12 xs12">
-        <ContributorList :contributors="assembliesContributors" :data-type="'Assemblies'" :title="'Submitters'" />
+      <div class="flex lg3 md3 sm12 xs12">
+        <Suspense>
+          <ContributorList
+            :field="'metadata.submitter'"
+            :model="'assemblies'"
+            :title="'Submitters'"
+            @list-created="getSubmitters"
+          />
+        </Suspense>
       </div>
     </div>
     <div class="row row-equal">
-      <div class="flex lg6 md6 sm12 xs12">
+      <div class="flex sm12 xs12">
         <va-card class="d-flex">
-          <va-card-title>assemblies</va-card-title>
+          <va-card-title>
+            <div class="row justify-space-between align-center">
+              <div class="flex">assemblies</div>
+              <div class="flex">total: {{ total }}</div>
+            </div>
+          </va-card-title>
+          <va-form tag="form" @submit.prevent="handleSubmit">
+            <va-card-content>
+              {{ searchForm }}
+              <div class="row align-center justify-start">
+                <div class="flex lg4 md4 sm12 xs12">
+                  <va-input
+                    v-model="searchForm.filter"
+                    label="search assembly"
+                    placeholder="Search by species, taxid or assembly name"
+                  ></va-input>
+                </div>
+                <div class="flex lg4 md4 sm12 xs12">
+                  <va-select
+                    v-model="searchForm.filter_option"
+                    label="filter by"
+                    :options="['taxid', 'assembly_name', 'scientific_name']"
+                  />
+                </div>
+                <div class="flex lg4 md4 sm12 xs12">
+                  <va-select
+                    v-model="searchForm.assembly_level"
+                    label="assembly level"
+                    :options="['Chromosome', 'Complete Genome', 'Contig', 'Scaffold']"
+                  />
+                </div>
+                <div class="flex lg4 md4 sm12 xs12">
+                  <va-date-input
+                    v-model="dateRange"
+                    :format-date="(date:Date) => date.toISOString().substring(0,10)"
+                    label="Date"
+                    placeholder="select a date range"
+                    style="width: 100%"
+                    mode="range"
+                    type="month"
+                    :allowed-months="(date:Date) => date <= new Date()"
+                    :allowed-years="(date:Date) => date <= new Date()"
+                  />
+                </div>
+                <div v-if="submitters.length" class="flex lg4 md4 sm12 xs12">
+                  <va-select
+                    v-model="searchForm.submitter"
+                    searchable
+                    label="submitters"
+                    :options="submitters.map((s) => s.name)"
+                  />
+                </div>
+                <div class="flex lg4 md4 sm12 xs12">
+                  <va-select
+                    v-model="searchForm.sort_column"
+                    label="sort by"
+                    :options="['contig_n50', 'size', 'submission_date']"
+                  />
+                </div>
+                <div class="flex lg4 md4 sm12 xs12">
+                  <va-select
+                    v-model="searchForm.sort_order"
+                    label="sorting order"
+                    :options="['asc', 'desc', 'no sorting order']"
+                  />
+                </div>
+              </div>
+            </va-card-content>
+            <va-card-actions align="between">
+              <va-button type="submit">Search</va-button>
+              <va-button color="danger" @click="reset()">Reset</va-button>
+            </va-card-actions>
+          </va-form>
           <va-card-content>
-            <!-- 
-                            filters:
-                                chr level
-                                contig n50
-                                bioproject
-                                taxid
-                                submitter
-                         -->
-          </va-card-content>
-          <va-card-content>
-            <va-list>
-              <va-list-item v-for="(assembly, index) in assemblies" :key="index" class="list__item">
-                <va-list-item-section>
-                  <va-list-item-label>
-                    {{ assembly.assembly_name }}
-                  </va-list-item-label>
-
-                  <va-list-item-label caption>
-                    {{ assembly.scientific_name }}
-                  </va-list-item-label>
-                  <va-list-item-label caption>
-                    {{ assembly.metadata.assembly_level }}
-                  </va-list-item-label>
-                </va-list-item-section>
-                <va-list-item-section icon>
-                  <va-icon name="remove_red_eye" color="background-tertiary" /> {{ assembly.biosample }}
-                </va-list-item-section>
-                <va-list-item-section icon>
-                  <va-icon name="remove_red_eye" color="background-tertiary" />
-                </va-list-item-section>
-              </va-list-item>
-            </va-list>
+            <va-data-table :items="assemblies" :columns="columns">
+              <template #header(assembly_level)="{ label }">{{ label }}</template>
+              <template #header(contig_n50)="{ label }">{{ label }}</template>
+              <template #cell(assembly_level)="{ rowData }"
+                ><va-chip size="small">{{ rowData.metadata.assembly_level }}</va-chip></template
+              >
+              <template #cell(contig_n50)="{ rowData }">
+                {{ (rowData.metadata.contig_n50 / getContigN50(rowData.metadata.contig_n50)?.value).toFixed(2) }}
+                {{ getContigN50(rowData.metadata.contig_n50)?.name }}
+              </template>
+              <template #cell(size)="{ rowData }">
+                {{
+                  (rowData.metadata.estimated_size / getContigN50(rowData.metadata.estimated_size)?.value).toFixed(2)
+                }}
+                {{ getContigN50(rowData.metadata.estimated_size)?.name }}
+              </template>
+              <template #cell(submission_date)="{ rowData }">
+                {{ rowData.metadata.submission_date }}
+              </template>
+              <template #cell(submitter)="{ rowData }">
+                {{ rowData.metadata.submitter }}
+              </template>
+              <template #cell(chromosomes)="{ rowData }">{{ rowData.chromosomes.length || '' }}</template>
+            </va-data-table>
+            <div class="row align-center justify-center">
+              <div class="flex">
+                <va-pagination
+                  v-model="pagination.offset"
+                  :page-size="pagination.limit"
+                  :total="total"
+                  :visible-pages="3"
+                  buttons-preset="secondary"
+                  rounded
+                  gapped
+                  border-color="primary"
+                  @update:model-value="handlePagination"
+                />
+              </div>
+            </div>
           </va-card-content>
         </va-card>
       </div>
@@ -68,124 +145,113 @@
   </div>
 </template>
 <script setup lang="ts">
-  import StatisticsService from '../../services/clients/StatisticsService'
   import AssemblyService from '../../services/clients/AssemblyService'
-  import { onMounted, reactive, ref } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { AxiosResponse } from 'axios'
-  import VaChart from '../../components/va-charts/VaChart.vue'
-  import { TLineChartData } from '../../data/types'
   import ContributorList from '../../components/stats/ContributorList.vue'
+  import AssemblyLevelChart from './AssemblyLevelChart.vue'
+  import AssemblyDateChart from './AssemblyDateChart.vue'
   import { Contributor } from '../../data/types'
-  import { totalmem } from 'os'
 
-  const assembliesContributors = ref<Contributor[]>()
-  const assembliesPublished = ref({})
-  const assemblyLevelData = ref({})
-  const primaryColorVariants = ['#2c82e0', '#ef476f', '#ffd166', '#06d6a0', '#8338ec']
-  const assemblies = ref([])
-  const pagination = reactive({
-    total: 0,
-    page: 0,
-    limit: 10,
+  const contigs = [
+    {
+      name: 'Kbp',
+      value: 1000,
+    },
+    {
+      name: 'Mbp',
+      value: 1000000,
+    },
+    {
+      name: 'Gbp',
+      value: 1000000000,
+    },
+  ]
+
+  const initDateRange = {
+    start: null,
+    end: null,
+  }
+  const dateRange = ref({ ...initDateRange })
+
+  watch(dateRange, () => {
+    console.log(dateRange)
+    if (dateRange.value.start) searchForm.value.start_date = new Date(dateRange.value.start).toISOString().split('T')[0]
+    if (dateRange.value.end) searchForm.value.end_date = new Date(dateRange.value.end).toISOString().split('T')[0]
   })
+
+  const initSearchForm = {
+    start_date: null,
+    end_date: null,
+    filter: null,
+    filter_option: null,
+    sort_column: null,
+    sort_order: null,
+    assembly_level: null,
+    submitter: null,
+  }
+  const initPagination = {
+    offset: 0,
+    limit: 10,
+  }
+  const pagination = ref({ ...initPagination })
+  const searchForm = ref({ ...initSearchForm })
+  const columns = [
+    'assembly_name',
+    'scientific_name',
+    'assembly_level',
+    'contig_n50',
+    'submitter',
+    'submission_date',
+    'size',
+    'chromosomes',
+  ]
+  const assemblies = ref([])
+  const total = ref(0)
+  const submitters = ref<Contributor[]>([])
 
   onMounted(async () => {
-    assemblyLevelData.value = createPieChartData(
-      await StatisticsService.getModelFieldStats('assemblies', { field: 'metadata.assembly_level' }),
-    )
-    assembliesPublished.value = createLineChartData(
-      await StatisticsService.getModelFieldStats('assemblies', { field: 'metadata.submission_date' }),
-    )
-    assembliesContributors.value = getContributors(
-      await StatisticsService.getModelFieldStats('assemblies', { field: 'metadata.submitter' }),
-    )
-    getAssemblies(await AssemblyService.getAssemblies({ offset: pagination.page, limit: pagination.limit }))
+    getAssemblies(await AssemblyService.getAssemblies({ ...pagination.value }))
   })
 
-  function createPieChartData(response: AxiosResponse) {
-    const { data } = response
-    return {
-      labels: Object.keys(data),
-      datasets: [
-        {
-          backgroundColor: primaryColorVariants,
-          label: 'Assemblies by assembly level',
-          data: Object.values(data),
-        },
-      ],
-    }
+  function getSubmitters(value: Contributor[]) {
+    submitters.value = [...value]
+  }
+  async function handleSubmit() {
+    pagination.value = { ...initPagination }
+    getAssemblies(await AssemblyService.getAssemblies({ ...searchForm.value, ...pagination.value }))
+  }
+  async function handlePagination(value: number) {
+    pagination.value.offset = value - 1
+    getAssemblies(await AssemblyService.getAssemblies({ ...searchForm.value, ...pagination.value }))
+  }
+
+  async function reset() {
+    searchForm.value = { ...initSearchForm }
+    dateRange.value = { ...initDateRange }
+    getAssemblies(await AssemblyService.getAssemblies({ ...pagination.value }))
+  }
+
+  function getContigN50(number: number) {
+    return contigs.sort((a, b) => {
+      return Math.abs(a.value - number) - Math.abs(b.value - number)
+    })[0]
   }
 
   function getAssemblies({ data }: AxiosResponse) {
     assemblies.value = data.data
-    pagination.total = data.total
+    total.value = data.total
     return data
-  }
-  function createLineChartData(response: AxiosResponse) {
-    const { data } = response
-    let submissionDates = {}
-    Object.keys(data).forEach((k: string) => {
-      const values = k.split('-')
-      const date = `${values[0]}-${values[1]}`
-      submissionDates[date] = submissionDates[date] ? submissionDates[date] + data[k] : data[k]
-    })
-    console.log(submissionDates)
-    const sortedData = Object.keys(submissionDates)
-      .sort((a, b) => new Date(a) > new Date(b))
-      .map((k: string) => {
-        return {
-          label: k,
-          value: submissionDates[k],
-        }
-      })
-    const lineChart: TLineChartData = {
-      labels: sortedData.map((data) => data.label),
-      datasets: [
-        {
-          label: 'Assemblies',
-          backgroundColor: '#2c82e0',
-          data: sortedData.map((data) => data.value),
-        },
-      ],
-    }
-    return lineChart
-  }
-
-  function getContributors(response: AxiosResponse): Contributor[] {
-    const { data } = response
-    const contibutors: Contributor[] = Object.keys(data)
-      .sort((a, b) => data[b] - data[a])
-      .map((key: string) => {
-        return {
-          name: key,
-          contributions: data[key],
-        }
-      })
-    return contibutors
-  }
-  function printChart() {
-    const windowObjectReference = window.open('', 'Print', 'height=600,width=800') as Window
-
-    const img = windowObjectReference.document.createElement('img')
-
-    img.src = `${(document.querySelector('.chart--donut canvas') as HTMLCanvasElement | undefined)?.toDataURL(
-      'image/png',
-    )}`
-
-    img.onload = () => {
-      windowObjectReference?.document.body.appendChild(img)
-    }
-
-    windowObjectReference.print()
-
-    windowObjectReference.onafterprint = () => {
-      windowObjectReference?.close()
-    }
   }
 </script>
 
-<style scoped>
+<style lang="scss">
   .chart {
     height: 400px;
+  }
+  .row-equal .flex {
+    .va-card {
+      height: 100%;
+    }
   }
 </style>

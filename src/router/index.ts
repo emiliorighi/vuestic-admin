@@ -43,6 +43,16 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../pages/assemblies/Assembly.vue'),
       },
       {
+        name: 'reads',
+        path: 'reads',
+        component: () => import('../pages/reads/Read.vue'),
+      },
+      {
+        name: 'biosamples',
+        path: 'biosamples',
+        component: () => import('../pages/biosamples/BioSample.vue'),
+      },
+      {
         name: 'statistics',
         path: 'statistics',
         component: RouteViewComponent,

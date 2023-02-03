@@ -16,14 +16,12 @@
       </div>
     </va-card-title>
     <va-card-content>
-      <va-inner-loading :loading="loading" style="width: 100%">
-        <div v-for="(contributor, idx) in visibleList" :key="idx" class="mb-3">
-          <va-progress-bar :model-value="getPercent(contributor.contributions)" :color="getProgressBarColor(idx)">
-            {{ contributor.contributions }} {{ dataType }}
-          </va-progress-bar>
-          <p class="mt-2">{{ contributor.name }}</p>
-        </div>
-      </va-inner-loading>
+      <div v-for="(contributor, idx) in visibleList" :key="idx" class="mb-3">
+        <va-progress-bar :model-value="getPercent(contributor.contributions)" :color="getProgressBarColor(idx)">
+          {{ contributor.contributions }} {{ model }}
+        </va-progress-bar>
+        <p class="mt-2">{{ contributor.name }}</p>
+      </div>
     </va-card-content>
   </va-card>
 </template>
@@ -31,39 +29,57 @@
 <script setup lang="ts">
   import { onMounted, ref } from 'vue'
   import { Contributor } from '../../data/types'
+  import StatisticsService from '../../services/clients/StatisticsService'
 
   const props = defineProps<{
-    contributors: Contributor[]
     title: string
-    dataType: string
-    loading: boolean
+    model: string
+    field: string
   }>()
-  const progressMax = ref(392)
+  const contributors = ref<Contributor[]>([])
+  const progressMax = ref(0)
   const visibleList = ref<Contributor[]>([])
   const step = ref(5)
   const page = ref(0)
 
-  onMounted(() => {
-    progressMax.value = Math.max(...props.contributors.map(({ contributions }) => contributions))
+  const emits = defineEmits(['listCreated'])
+
+  onMounted(async () => {
+    const { data } = await StatisticsService.getModelFieldStats(props.model, { field: props.field })
+    getContributors(data)
     showNext()
   })
+
+  function getContributors(data): Contributor[] {
+    contributors.value = Object.keys(data)
+      .sort((a, b) => data[b] - data[a])
+      .map((key: string) => {
+        return {
+          name: key,
+          contributions: data[key],
+        }
+      })
+    emits('listCreated', contributors.value)
+    progressMax.value = Math.max(...contributors.value.map(({ contributions }) => contributions))
+  }
 
   function getPercent(val: number) {
     return (val / progressMax.value) * 100
   }
 
-  async function showNext() {
+  function showNext() {
     const start = page.value * step.value
 
     const end = page.value * step.value + step.value
 
-    const elements = props.contributors.slice(start, end)
+    console.log(contributors.value)
 
-    visibleList.value = elements
+    visibleList.value = contributors.value.slice(start, end)
 
+    console.log(visibleList.value)
     page.value += 1
 
-    const maxPages = (props.contributors.length - 1) / step.value
+    const maxPages = (contributors.value.length - 1) / step.value
 
     if (page.value > maxPages) {
       page.value = 0

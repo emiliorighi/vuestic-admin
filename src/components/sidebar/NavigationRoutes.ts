@@ -40,6 +40,20 @@ export default {
       },
     },
     {
+      name: 'reads',
+      displayName: 'menu.reads',
+      meta: {
+        icon: 'widgets',
+      },
+    },
+    {
+      name: 'biosamples',
+      displayName: 'menu.biosamples',
+      meta: {
+        icon: 'hub',
+      },
+    },
+    {
       name: 'statistics',
       displayName: 'menu.statistics',
       meta: {

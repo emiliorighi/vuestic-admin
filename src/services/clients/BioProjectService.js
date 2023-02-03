@@ -6,6 +6,9 @@ class BioProjectService {
   getBioProject(accession) {
     return base.get(`/bioprojects/${accession}`)
   }
+  getBioprojects(params) {
+    return base.get('/bioprojects', { params: params })
+  }
   searchBioproject(params) {
     return base.get('/bioprojects', { params: params })
   }
