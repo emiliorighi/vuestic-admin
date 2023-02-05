@@ -295,7 +295,7 @@
 
     "bioprojects": "BioProjects",
     "taxons": "Taxons",
-    "assemblies" : "Assemblies",
+    "assemblies": "Assemblies",
     "biosamples": "BioSamples",
     "local_samples": "Local Samples",
     "reads": "Reads",

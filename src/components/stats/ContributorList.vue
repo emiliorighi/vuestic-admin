@@ -72,11 +72,8 @@
 
     const end = page.value * step.value + step.value
 
-    console.log(contributors.value)
-
     visibleList.value = contributors.value.slice(start, end)
 
-    console.log(visibleList.value)
     page.value += 1
 
     const maxPages = (contributors.value.length - 1) / step.value
@@ -93,7 +90,6 @@
       return themeColors[idx]
     }
 
-    // Get random color if idx out of colors array
     const keys = Object.keys(themeColors)
     return themeColors[keys[(keys.length * Math.random()) << 0] as unknown as number]
   }

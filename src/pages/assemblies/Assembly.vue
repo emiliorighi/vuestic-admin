@@ -1,144 +1,43 @@
 <template>
   <div>
-    <div class="row row-equal">
-      <div class="flex lg3 md3 sm12 xs12">
-        <Suspense>
-          <AssemblyLevelChart />
-        </Suspense>
+    <div class="row">
+      <div class="flex">
+        <va-card v-if="assembly.chromosomes">
+          <va-card-title>chromosomes</va-card-title>
+          <va-card-content> </va-card-content>
+        </va-card>
       </div>
-      <div class="flex lg6 md6 sm12 xs12">
-        <Suspense>
-          <AssemblyDateChart />
-        </Suspense>
+      <div class="flex">
+        <va-card>
+          <va-card-title>external links</va-card-title>
+          <va-card-content> </va-card-content>
+        </va-card>
       </div>
-      <div class="flex lg3 md3 sm12 xs12">
-        <Suspense>
-          <ContributorList
-            :field="'metadata.submitter'"
-            :model="'assemblies'"
-            :title="'Submitters'"
-            @list-created="getSubmitters"
-          />
-        </Suspense>
+      <div class="flex">
+        <va-card>
+          <va-card-title>related bioprojects</va-card-title>
+          <va-card-content> </va-card-content>
+        </va-card>
       </div>
-    </div>
-    <div class="row row-equal">
-      <div class="flex sm12 xs12">
-        <va-card class="d-flex">
-          <va-card-title>
-            <div class="row justify-space-between align-center">
-              <div class="flex">assemblies</div>
-              <div class="flex">total: {{ total }}</div>
-            </div>
-          </va-card-title>
-          <va-form tag="form" @submit.prevent="handleSubmit">
-            <va-card-content>
-              {{ searchForm }}
-              <div class="row align-center justify-start">
-                <div class="flex lg4 md4 sm12 xs12">
-                  <va-input
-                    v-model="searchForm.filter"
-                    label="search assembly"
-                    placeholder="Search by species, taxid or assembly name"
-                  ></va-input>
-                </div>
-                <div class="flex lg4 md4 sm12 xs12">
-                  <va-select
-                    v-model="searchForm.filter_option"
-                    label="filter by"
-                    :options="['taxid', 'assembly_name', 'scientific_name']"
-                  />
-                </div>
-                <div class="flex lg4 md4 sm12 xs12">
-                  <va-select
-                    v-model="searchForm.assembly_level"
-                    label="assembly level"
-                    :options="['Chromosome', 'Complete Genome', 'Contig', 'Scaffold']"
-                  />
-                </div>
-                <div class="flex lg4 md4 sm12 xs12">
-                  <va-date-input
-                    v-model="dateRange"
-                    :format-date="(date:Date) => date.toISOString().substring(0,10)"
-                    label="Date"
-                    placeholder="select a date range"
-                    style="width: 100%"
-                    mode="range"
-                    type="month"
-                    :allowed-months="(date:Date) => date <= new Date()"
-                    :allowed-years="(date:Date) => date <= new Date()"
-                  />
-                </div>
-                <div v-if="submitters.length" class="flex lg4 md4 sm12 xs12">
-                  <va-select
-                    v-model="searchForm.submitter"
-                    searchable
-                    label="submitters"
-                    :options="submitters.map((s) => s.name)"
-                  />
-                </div>
-                <div class="flex lg4 md4 sm12 xs12">
-                  <va-select
-                    v-model="searchForm.sort_column"
-                    label="sort by"
-                    :options="['contig_n50', 'size', 'submission_date']"
-                  />
-                </div>
-                <div class="flex lg4 md4 sm12 xs12">
-                  <va-select
-                    v-model="searchForm.sort_order"
-                    label="sorting order"
-                    :options="['asc', 'desc', 'no sorting order']"
-                  />
-                </div>
-              </div>
-            </va-card-content>
-            <va-card-actions align="between">
-              <va-button type="submit">Search</va-button>
-              <va-button color="danger" @click="reset()">Reset</va-button>
-            </va-card-actions>
-          </va-form>
-          <va-card-content>
-            <va-data-table :items="assemblies" :columns="columns">
-              <template #header(assembly_level)="{ label }">{{ label }}</template>
-              <template #header(contig_n50)="{ label }">{{ label }}</template>
-              <template #cell(assembly_level)="{ rowData }"
-                ><va-chip size="small">{{ rowData.metadata.assembly_level }}</va-chip></template
-              >
-              <template #cell(contig_n50)="{ rowData }">
-                {{ (rowData.metadata.contig_n50 / getContigN50(rowData.metadata.contig_n50)?.value).toFixed(2) }}
-                {{ getContigN50(rowData.metadata.contig_n50)?.name }}
-              </template>
-              <template #cell(size)="{ rowData }">
-                {{
-                  (rowData.metadata.estimated_size / getContigN50(rowData.metadata.estimated_size)?.value).toFixed(2)
-                }}
-                {{ getContigN50(rowData.metadata.estimated_size)?.name }}
-              </template>
-              <template #cell(submission_date)="{ rowData }">
-                {{ rowData.metadata.submission_date }}
-              </template>
-              <template #cell(submitter)="{ rowData }">
-                {{ rowData.metadata.submitter }}
-              </template>
-              <template #cell(chromosomes)="{ rowData }">{{ rowData.chromosomes.length || '' }}</template>
-            </va-data-table>
-            <div class="row align-center justify-center">
-              <div class="flex">
-                <va-pagination
-                  v-model="pagination.offset"
-                  :page-size="pagination.limit"
-                  :total="total"
-                  :visible-pages="3"
-                  buttons-preset="secondary"
-                  rounded
-                  gapped
-                  border-color="primary"
-                  @update:model-value="handlePagination"
-                />
-              </div>
-            </div>
-          </va-card-content>
+      <div class="flex">
+        <va-card>
+          <va-card-title>related organism</va-card-title>
+          <va-card-content> </va-card-content>
+        </va-card>
+      </div>
+      <div class="flex">
+        <va-card>
+          <va-card-title>related biosample</va-card-title>
+          <va-card-content> </va-card-content>
+        </va-card>
+      </div>
+      <div v-if="showJBrowse" class="flex">
+        <Jbrowse2 :assembly="jbrowse.assembly" />
+      </div>
+      <div class="flex">
+        <va-card>
+          <va-card-title>metadata</va-card-title>
+          <va-card-content> </va-card-content>
         </va-card>
       </div>
     </div>
@@ -146,102 +45,49 @@
 </template>
 <script setup lang="ts">
   import AssemblyService from '../../services/clients/AssemblyService'
-  import { onMounted, ref, watch } from 'vue'
+  import { onMounted, reactive, ref } from 'vue'
   import { AxiosResponse } from 'axios'
-  import ContributorList from '../../components/stats/ContributorList.vue'
-  import AssemblyLevelChart from './AssemblyLevelChart.vue'
-  import AssemblyDateChart from './AssemblyDateChart.vue'
-  import { Contributor } from '../../data/types'
-
-  const contigs = [
-    {
-      name: 'Kbp',
-      value: 1000,
-    },
-    {
-      name: 'Mbp',
-      value: 1000000,
-    },
-    {
-      name: 'Gbp',
-      value: 1000000000,
-    },
-  ]
-
-  const initDateRange = {
-    start: null,
-    end: null,
-  }
-  const dateRange = ref({ ...initDateRange })
-
-  watch(dateRange, () => {
-    console.log(dateRange)
-    if (dateRange.value.start) searchForm.value.start_date = new Date(dateRange.value.start).toISOString().split('T')[0]
-    if (dateRange.value.end) searchForm.value.end_date = new Date(dateRange.value.end).toISOString().split('T')[0]
+  import Jbrowse2 from '../../components/genome-browser/Jbrowse2.vue'
+  import { AssemblyAdapter } from '../../data/types'
+  const props = defineProps({
+    accession: String,
   })
 
-  const initSearchForm = {
-    start_date: null,
-    end_date: null,
-    filter: null,
-    filter_option: null,
-    sort_column: null,
-    sort_order: null,
-    assembly_level: null,
-    submitter: null,
-  }
-  const initPagination = {
-    offset: 0,
-    limit: 10,
-  }
-  const pagination = ref({ ...initPagination })
-  const searchForm = ref({ ...initSearchForm })
-  const columns = [
-    'assembly_name',
-    'scientific_name',
-    'assembly_level',
-    'contig_n50',
-    'submitter',
-    'submission_date',
-    'size',
-    'chromosomes',
-  ]
-  const assemblies = ref([])
-  const total = ref(0)
-  const submitters = ref<Contributor[]>([])
-
+  const assembly = ref({})
+  const jbrowse = reactive({
+    assembly: {},
+  })
+  let jBrowseAssembly = {}
+  const showJBrowse = ref(false)
   onMounted(async () => {
-    getAssemblies(await AssemblyService.getAssemblies({ ...pagination.value }))
+    getAssembly(await AssemblyService.getAssembly(props.accession))
   })
 
-  function getSubmitters(value: Contributor[]) {
-    submitters.value = [...value]
-  }
-  async function handleSubmit() {
-    pagination.value = { ...initPagination }
-    getAssemblies(await AssemblyService.getAssemblies({ ...searchForm.value, ...pagination.value }))
-  }
-  async function handlePagination(value: number) {
-    pagination.value.offset = value - 1
-    getAssemblies(await AssemblyService.getAssemblies({ ...searchForm.value, ...pagination.value }))
-  }
-
-  async function reset() {
-    searchForm.value = { ...initSearchForm }
-    dateRange.value = { ...initDateRange }
-    getAssemblies(await AssemblyService.getAssemblies({ ...pagination.value }))
-  }
-
-  function getContigN50(number: number) {
-    return contigs.sort((a, b) => {
-      return Math.abs(a.value - number) - Math.abs(b.value - number)
-    })[0]
-  }
-
-  function getAssemblies({ data }: AxiosResponse) {
-    assemblies.value = data.data
-    total.value = data.total
-    return data
+  function getAssembly({ data }: AxiosResponse) {
+    assembly.value = { ...data }
+    if (assembly.value.chromosomes) {
+      const assemblyAdapter: AssemblyAdapter = {
+        name: assembly.value.assembly_name,
+        sequence: {
+          name: assembly.value.assembly_name,
+          trackId: assembly.value.accession,
+          type: 'ReferenceSequenceTrack',
+          adapter: {
+            type: 'RefGetAdapter',
+            sequenceData: {},
+          },
+        },
+      }
+      assembly.value.chromosomes.forEach((chr) => {
+        const key = 'insdc:' + chr.accession_version
+        assemblyAdapter.sequence.adapter.sequenceData[key] = {
+          name: chr.metadata.name,
+          size: Number(chr.metadata.length),
+        }
+      })
+      jbrowse.assembly = { ...assemblyAdapter }
+      showJBrowse.value = true
+    }
   }
 </script>
 

@@ -40,6 +40,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         name: 'assemblies',
         path: 'assemblies',
+        component: () => import('../pages/assemblies/Assemblies.vue'),
+      },
+      {
+        name: 'assembly',
+        path: 'assemblies/:accession',
+        props: true,
         component: () => import('../pages/assemblies/Assembly.vue'),
       },
       {

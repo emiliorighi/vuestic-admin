@@ -12,6 +12,7 @@
   import { createRoot } from 'react-dom/client'
   import React from 'react'
   import { onMounted, ref } from 'vue'
+  import RefGetPlugin from 'jbrowse-plugin-refget-api'
   // import '@fontsource/roboto'
   const wrapper = ref(null)
 
@@ -28,12 +29,12 @@
   })
 
   function renderBrowser() {
-    const assembly = props.assembly
-    const tracks = Object.assign([], props.tracks)
-    console.log(tracks)
+    console.log(props.assembly)
+    const assembly = { ...props.assembly }
+    // const assembly = props.assembly
     createRoot(wrapper.value).render(
       React.createElement(JBrowseLinearGenomeView, {
-        viewState: new createViewState({ assembly: assembly, tracks: tracks }),
+        viewState: new createViewState({ assembly: assembly, plugins: [RefGetPlugin] }),
       }),
     )
   }
