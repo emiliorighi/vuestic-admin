@@ -51,12 +51,8 @@
     accordionValue.value = props.items.map((item) => isItemExpanded(item))
   })
 
-  // function isGroup(item: INavigationRoute) {
-  //   return !!item.children
-  // }
-
   function isRouteActive(item: INavigationRoute) {
-    return item.name === useRoute().name
+    return item.name === useRoute().name || useRoute().fullPath.includes(item.meta.name)
   }
 
   function isItemExpanded(item: INavigationRoute): boolean {

@@ -1,44 +1,83 @@
 <template>
-  <div>
-    <div class="row">
+  <div v-if="assembly.metadata">
+    <div class="row row-equal align-center justify-space-between">
       <div class="flex">
-        <va-card v-if="assembly.chromosomes">
-          <va-card-title>chromosomes</va-card-title>
-          <va-card-content> </va-card-content>
+        <h1 class="va-h1">{{ assembly.assembly_name }}</h1>
+        <va-button preset="primary" icon="pets">{{ assembly.scientific_name }}</va-button>
+        <va-button preset="primary" icon="hub">{{ assembly.sample_accession }}</va-button>
+      </div>
+      <div class="flex">
+        <div class="row row-equal align-center">
+          <div class="flex">
+            <a target="_blank" :href="`https://www.ncbi.nlm.nih.gov/assembly/${assembly.accession}`">
+              <va-avatar size="large">
+                <img :src="'/ncbi.png'" />
+              </va-avatar>
+            </a>
+          </div>
+          <div class="flex">
+            <a target="_blank" :href="`https://www.ebi.ac.uk/ena/browser/view/${assembly.accession}`">
+              <va-avatar size="large">
+                <img :src="'/ena.jpeg'" />
+              </va-avatar>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row row-equal">
+      <div class="flex">
+        <va-card class="mb-4" color="danger">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ assembly.metadata.contig_n50 }}</h2>
+            <p style="color: white">Contig n50</p>
+          </va-card-content>
         </va-card>
       </div>
       <div class="flex">
-        <va-card>
-          <va-card-title>external links</va-card-title>
-          <va-card-content> </va-card-content>
+        <va-card class="mb-4" color="info">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ assembly.metadata.estimated_size }}</h2>
+            <p style="color: white">genome size</p>
+          </va-card-content>
         </va-card>
       </div>
       <div class="flex">
-        <va-card>
-          <va-card-title>related bioprojects</va-card-title>
-          <va-card-content> </va-card-content>
+        <va-card class="mb-4" color="warning">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ assembly.metadata.assembly_level }}</h2>
+            <p style="color: white">assembly level</p>
+          </va-card-content>
+        </va-card>
+      </div>
+      <div v-if="assembly.chromosomes.length" class="flex">
+        <va-card class="mb-4" color="primary">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ assembly.chromosomes.length }}</h2>
+            <p style="color: white">chromosomes</p>
+          </va-card-content>
         </va-card>
       </div>
       <div class="flex">
-        <va-card>
-          <va-card-title>related organism</va-card-title>
-          <va-card-content> </va-card-content>
+        <va-card class="mb-4" color="secondary">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ assembly.metadata.submitter }}</h2>
+            <p style="color: white">submitter</p>
+          </va-card-content>
         </va-card>
       </div>
       <div class="flex">
-        <va-card>
-          <va-card-title>related biosample</va-card-title>
-          <va-card-content> </va-card-content>
+        <va-card class="mb-4" color="success">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ assembly.metadata.submission_date }}</h2>
+            <p style="color: white">submission date</p>
+          </va-card-content>
         </va-card>
       </div>
-      <div v-if="showJBrowse" class="flex">
+    </div>
+    <div class="row row-equal">
+      <div v-if="showJBrowse" class="flex lg12 md12 sm12 xs12">
         <Jbrowse2 :assembly="jbrowse.assembly" />
-      </div>
-      <div class="flex">
-        <va-card>
-          <va-card-title>metadata</va-card-title>
-          <va-card-content> </va-card-content>
-        </va-card>
       </div>
     </div>
   </div>
@@ -49,6 +88,9 @@
   import { AxiosResponse } from 'axios'
   import Jbrowse2 from '../../components/genome-browser/Jbrowse2.vue'
   import { AssemblyAdapter } from '../../data/types'
+  import OrganismCard from '../../components/organism/OrganismCard.vue'
+  import BioSampleCard from '../../components/biosample/BioSampleCard.vue'
+
   const props = defineProps({
     accession: String,
   })
@@ -57,7 +99,6 @@
   const jbrowse = reactive({
     assembly: {},
   })
-  let jBrowseAssembly = {}
   const showJBrowse = ref(false)
   onMounted(async () => {
     getAssembly(await AssemblyService.getAssembly(props.accession))
@@ -65,7 +106,7 @@
 
   function getAssembly({ data }: AxiosResponse) {
     assembly.value = { ...data }
-    if (assembly.value.chromosomes) {
+    if (assembly.value.chromosomes.length) {
       const assemblyAdapter: AssemblyAdapter = {
         name: assembly.value.assembly_name,
         sequence: {
@@ -99,5 +140,16 @@
     .va-card {
       height: 100%;
     }
+  }
+  .va-card {
+    margin-bottom: 0 !important;
+    &__title {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .list__item + .list__item {
+    margin-top: 10px;
   }
 </style>

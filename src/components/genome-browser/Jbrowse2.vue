@@ -1,10 +1,5 @@
 <template>
-  <va-card class="custom-card">
-    <va-card-title> Genome Browser </va-card-title>
-    <va-card-content>
-      <div ref="wrapper"></div>
-    </va-card-content>
-  </va-card>
+  <div ref="wrapper"></div>
 </template>
 
 <script setup lang="ts">

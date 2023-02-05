@@ -11,6 +11,9 @@ class OrganismService {
       params: params,
     })
   }
+  getOrganism(taxid) {
+    return base.get(`/organisms/${taxid}`)
+  }
 }
 
 export default new OrganismService()

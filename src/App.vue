@@ -1,6 +1,9 @@
 <template>
-  <router-view />
+  <AppLayout />
 </template>
+<script setup>
+  import AppLayout from './layouts/AppLayout.vue'
+</script>
 
 <style lang="scss">
   @import 'scss/main.scss';
