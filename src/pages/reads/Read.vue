@@ -1,211 +1,127 @@
 <template>
-  <div>
-    <div class="row row-equal">
-      <div class="flex lg3 md3 sm12 xs12">
-        <va-card class="d-flex">
-          <va-card-title>
-            <h1>Platform used</h1>
-            <va-button icon="print" plain @click="printChart" />
-          </va-card-title>
-          <va-card-content v-if="platformUsedData">
-            <va-chart ref="doughnutChart" class="chart chart--donut" :data="platformUsedData" type="doughnut" />
-          </va-card-content>
-        </va-card>
+  <div v-if="read.metadata">
+    <div class="row row-equal align-center justify-space-between">
+      <div class="flex">
+        <h1 class="va-h1">{{ read.metadata.experiment_title }}</h1>
+        <va-button preset="primary" icon="pets">{{ read.metadata.scientific_name }}</va-button>
+        <va-button preset="primary" icon="hub">{{ read.metadata.sample_accession }}</va-button>
       </div>
-      <div class="flex lg6 md6 sm12 xs12">
-        <va-card v-if="readsPublished" class="chart-widget">
-          <va-card-title>Reads submitted by month</va-card-title>
-          <va-card-content>
-            <va-chart class="chart" :data="readsPublished" type="line" />
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="readsContributors?.length" class="flex lg3 md3 sm12 xs12">
-        <ContributorList :contributors="readsContributors" :data-type="'Reads'" :title="'Center names'" />
+      <div class="flex">
+        <div class="row row-equal align-center">
+          <div class="flex">
+            <a target="_blank" :href="`https://www.ncbi.nlm.nih.gov/sra/${read.experiment_accession}`">
+              <va-avatar size="large">
+                <img :src="'/ncbi.png'" />
+              </va-avatar>
+            </a>
+          </div>
+          <div class="flex">
+            <a target="_blank" :href="`https://www.ebi.ac.uk/ena/browser/view/${read.experiment_accession}`">
+              <va-avatar size="large">
+                <img :src="'/ena.jpeg'" />
+              </va-avatar>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
     <div class="row row-equal">
-      <div class="flex sm12 xs12">
-        <va-card class="d-flex">
-          <va-card-title>reads</va-card-title>
-          <!-- <va-card-content>
-              
-                              filters:
-                                  chr level
-                                  contig n50
-                                  bioproject
-                                  taxid
-                                  submitter
-                           
-              <div class="row align-center">
-                  <div class="flex lg4 md4 sm12 xs12">
-                      <va-input label="search read" placeholder="Search by species, taxid or experiment accession"></va-input>
-                  </div>
-                  <div class="flex lg4 md4 sm12 xs12">
-                      <va-select label="instrument platform" :options="['Chromosome','Complete Genome', 'Contig', 'Scaffold']"/>
-                  </div>
-                  <div class="flex lg4 md4 sm12 xs12">
-                      <va-select label="bioprojects" :options="['Chromosome','Complete Genome', 'Contig', 'Scaffold']"/>
-                  </div>
-                  <div class="flex lg4 md4 sm12 xs12">
-                      <va-date-input label="Date" placeholder="select a date range" style="width:100%" mode="range" v-model="range" type="month" :allowedMonths="(date:Date) => date <= new Date()" :allowedYears="(date:Date) => date <= new Date()"/>
-                  </div>
-              </div>
-            </va-card-content> -->
-          <!-- <va-card-content>
-              <va-data-table :items="reads" :columns="columns">
-                  <template #header(assembly_level)="{ label }">{{ label }}</template>
-                  <template #header(contig_n50)="{ label }">{{ label }}</template>
-                  <template #cell(assembly_level)="{ rowData }"><va-chip size="small">{{ rowData.metadata.assembly_level }}</va-chip></template>
-                  <template #cell(contig_n50)="{ rowData }">
-                      {{ (rowData.metadata.contig_n50 / getContigN50(rowData.metadata.contig_n50)?.value).toFixed(2)  }} {{ getContigN50(rowData.metadata.contig_n50)?.name }}
-                  </template>
-                  <template #cell(size)="{ rowData }">                     
-                      {{ (rowData.metadata.estimated_size / getContigN50(rowData.metadata.estimated_size)?.value).toFixed(2)  }} {{ getContigN50(rowData.metadata.estimated_size)?.name }}
-                  </template>
-  
-                  <template #cell(submitter)="{ rowData }">{{ rowData.metadata.submitter }}</template>
-  
-                  <template #cell(chromosomes)="{ rowData }">{{ rowData.chromosomes.length || '' }}</template>
-  
-              </va-data-table>
-            </va-card-content> -->
+      <div class="flex">
+        <va-card class="mb-4" color="danger">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ read.instrument_platform }}</h2>
+            <p style="color: white">instrument platform</p>
+          </va-card-content>
         </va-card>
+      </div>
+      <div class="flex">
+        <va-card class="mb-4" color="info">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ read.instrument_model }}</h2>
+            <p style="color: white">instrument model</p>
+          </va-card-content>
+        </va-card>
+      </div>
+      <div class="flex">
+        <va-card class="mb-4" color="secondart">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ read.metadata.base_count }}</h2>
+            <p style="color: white">base count</p>
+          </va-card-content>
+        </va-card>
+      </div>
+      <div class="flex">
+        <va-card class="mb-4" color="warning">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ read.metadata.center_name }}</h2>
+            <p style="color: white">center name</p>
+          </va-card-content>
+        </va-card>
+      </div>
+      <div class="flex">
+        <va-card class="mb-4" color="secondary">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ read.metadata.first_created }}</h2>
+            <p style="color: white">first created</p>
+          </va-card-content>
+        </va-card>
+      </div>
+    </div>
+    <div v-for="key in Object.keys(read.metadata)" :key="key" class="row row-equal">
+      <div v-if="read.metadata[key]" class="flex lg12 md12 sm12 xs12">
+        <h6 class="va-h6">{{ key }}</h6>
+        <div v-if="read.metadata[key] && read.metadata[key].split(';').length > 1">
+          <ul class="va-unordered">
+            <li v-for="(v, index) in read.metadata[key].split(';')" :key="index">
+              {{ v }}
+            </li>
+          </ul>
+        </div>
+        <div v-else>
+          <p>{{ read.metadata[key] }}</p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-  import StatisticsService from '../../services/clients/StatisticsService'
-  import AssemblyService from '../../services/clients/AssemblyService'
-  import { onMounted, reactive, ref } from 'vue'
+  import ReadService from '../../services/clients/ReadService'
+  import { onMounted, ref } from 'vue'
   import { AxiosResponse } from 'axios'
-  import VaChart from '../../components/va-charts/VaChart.vue'
-  import { TLineChartData } from '../../data/types'
-  import ContributorList from '../../components/stats/ContributorList.vue'
-  import { Contributor } from '../../data/types'
 
-  const columns = [
-    'scientific_name',
-    'assembly_name',
-    'assembly_level',
-    'contig_n50',
-    'submitter',
-    'chromosomes',
-    'size',
-  ]
-  const readsContributors = ref<Contributor[]>()
-  const readsPublished = ref({})
-  const platformUsedData = ref({})
-  const primaryColorVariants = ['#2c82e0', '#ef476f', '#ffd166', '#06d6a0', '#8338ec']
-  const reads = ref([])
-  const range = ref()
-  const pagination = reactive({
-    total: 0,
-    page: 0,
-    limit: 10,
+  const props = defineProps({
+    accession: String,
   })
+
+  const read = ref({})
 
   onMounted(async () => {
-    platformUsedData.value = createPieChartData(
-      await StatisticsService.getModelFieldStats('experiments', { field: 'instrument_platform' }),
-    )
-    readsPublished.value = createLineChartData(
-      await StatisticsService.getModelFieldStats('experiments', { field: 'metadata.first_public' }),
-    )
-    readsContributors.value = getContributors(
-      await StatisticsService.getModelFieldStats('experiments', { field: 'metadata.center_name' }),
-    )
-    //   getAssemblies(await AssemblyService.getAssemblies({ offset: pagination.page, limit: pagination.limit }))
+    getRead(await ReadService.getRead(props.accession))
   })
 
-  function createPieChartData(response: AxiosResponse) {
-    const { data } = response
-    const sortedData = Object.keys(data)
-      .sort((a, b) => data[b] - data[a])
-      .map((k) => {
-        return {
-          label: k,
-          value: data[k],
-        }
-      })
-    return {
-      labels: sortedData.map((d) => d.label),
-      datasets: [
-        {
-          backgroundColor: primaryColorVariants,
-          label: 'Reads by instrument platform',
-          data: sortedData.map((d) => d.value),
-        },
-      ],
-    }
-  }
-
-  function createLineChartData(response: AxiosResponse) {
-    const { data } = response
-    let submissionDates = {}
-    Object.keys(data).forEach((k: string) => {
-      const values = k.split('-')
-      const date = `${values[0]}-${values[1]}`
-      submissionDates[date] = submissionDates[date] ? submissionDates[date] + data[k] : data[k]
-    })
-    const sortedData = Object.keys(submissionDates)
-      .sort((a, b) => new Date(a) > new Date(b))
-      .map((k: string) => {
-        return {
-          label: k,
-          value: submissionDates[k],
-        }
-      })
-
-    const lineChart: TLineChartData = {
-      labels: sortedData.map((data) => data.label),
-      datasets: [
-        {
-          label: 'Reads',
-          backgroundColor: '#2c82e0',
-          data: sortedData.map((data) => data.value),
-        },
-      ],
-    }
-    return lineChart
-  }
-
-  function getContributors(response: AxiosResponse): Contributor[] {
-    const { data } = response
-    const contibutors: Contributor[] = Object.keys(data)
-      .sort((a, b) => data[b] - data[a])
-      .map((key: string) => {
-        return {
-          name: key,
-          contributions: data[key],
-        }
-      })
-    return contibutors
-  }
-  function printChart() {
-    const windowObjectReference = window.open('', 'Print', 'height=600,width=800') as Window
-
-    const img = windowObjectReference.document.createElement('img')
-
-    img.src = `${(document.querySelector('.chart--donut canvas') as HTMLCanvasElement | undefined)?.toDataURL(
-      'image/png',
-    )}`
-
-    img.onload = () => {
-      windowObjectReference?.document.body.appendChild(img)
-    }
-
-    windowObjectReference.print()
-
-    windowObjectReference.onafterprint = () => {
-      windowObjectReference?.close()
-    }
+  function getRead({ data }: AxiosResponse) {
+    read.value = { ...data }
   }
 </script>
 
-<style scoped>
+<style lang="scss">
   .chart {
     height: 400px;
+  }
+  .row-equal .flex {
+    .va-card {
+      height: 100%;
+    }
+  }
+  .va-card {
+    margin-bottom: 0 !important;
+    &__title {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .list__item + .list__item {
+    margin-top: 10px;
   }
 </style>

@@ -47,7 +47,26 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: 'reads',
     path: '/reads',
-    component: () => import('../pages/reads/Read.vue'),
+    component: () => import('../pages/reads/Reads.vue'),
+    children: [
+      {
+        name: 'read-list',
+        path: '',
+        component: () => import('../pages/reads/ReadList.vue'),
+        meta: {
+          name: 'reads',
+        },
+      },
+      {
+        name: 'read',
+        path: ':accession',
+        props: true,
+        component: () => import('../pages/reads/Read.vue'),
+        meta: {
+          name: 'reads',
+        },
+      },
+    ],
   },
   {
     name: 'biosamples',

@@ -1,7 +1,7 @@
 <template>
   <va-card class="d-flex">
     <va-card-title>
-      <h1>assembly level</h1>
+      <h1>{{ title }}</h1>
       <va-button icon="print" plain @click="printChart" />
     </va-card-title>
     <va-card-content>
@@ -9,13 +9,20 @@
     </va-card-content>
   </va-card>
 </template>
+
 <script setup lang="ts">
   import VaChart from '../../components/va-charts/VaChart.vue'
   import StatisticsService from '../../services/clients/StatisticsService'
 
+  const props = defineProps({
+    model: String,
+    field: String,
+    title: String,
+    label: String,
+  })
   const primaryColorVariants = ['#2c82e0', '#ef476f', '#ffd166', '#06d6a0', '#8338ec']
 
-  const { data } = await StatisticsService.getModelFieldStats('assemblies', { field: 'metadata.assembly_level' })
+  const { data } = await StatisticsService.getModelFieldStats(props.model, { field: props.field })
 
   function createPieChartData(data: Record<string, number>) {
     return {
@@ -23,7 +30,7 @@
       datasets: [
         {
           backgroundColor: primaryColorVariants,
-          label: 'Assemblies by assembly level',
+          label: props.label,
           data: Object.values(data),
         },
       ],

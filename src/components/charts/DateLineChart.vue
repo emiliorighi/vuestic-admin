@@ -1,6 +1,6 @@
 <template>
   <va-card class="chart-widget">
-    <va-card-title>Assemblies submitted by month</va-card-title>
+    <va-card-title>{{ title }}</va-card-title>
     <va-card-content>
       <va-chart class="chart" :data="createLineChartData(data)" type="line" />
     </va-card-content>
@@ -11,7 +11,14 @@
   import VaChart from '../../components/va-charts/VaChart.vue'
   import { TLineChartData } from '../../data/types'
 
-  const { data } = await StatisticsService.getModelFieldStats('assemblies', { field: 'metadata.submission_date' })
+  const props = defineProps({
+    model: String,
+    field: String,
+    title: String,
+    label: String,
+    color: String,
+  })
+  const { data } = await StatisticsService.getModelFieldStats(props.model, { field: props.field })
 
   function createLineChartData(data) {
     let submissionDates = {}
@@ -32,8 +39,8 @@
       labels: sortedData.map((data) => data.label),
       datasets: [
         {
-          label: 'Assemblies',
-          backgroundColor: '#2c82e0',
+          label: props.label,
+          backgroundColor: props.color,
           data: sortedData.map((data) => data.value),
         },
       ],

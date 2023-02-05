@@ -88,8 +88,6 @@
   import { AxiosResponse } from 'axios'
   import Jbrowse2 from '../../components/genome-browser/Jbrowse2.vue'
   import { AssemblyAdapter } from '../../data/types'
-  import OrganismCard from '../../components/organism/OrganismCard.vue'
-  import BioSampleCard from '../../components/biosample/BioSampleCard.vue'
 
   const props = defineProps({
     accession: String,

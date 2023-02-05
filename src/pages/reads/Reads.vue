@@ -5,20 +5,20 @@
       <div class="flex lg3 md3 sm12 xs12">
         <Suspense>
           <PieChart
-            :field="'metadata.assembly_level'"
-            :model="'assemblies'"
-            :title="'assembly levels'"
-            :label="'Assemblies by assembly level'"
+            :field="'instrument_platform'"
+            :model="'reads'"
+            :title="'platform used'"
+            :label="'Reads by instrument platform'"
           />
         </Suspense>
       </div>
       <div class="flex lg6 md6 sm12 xs12">
         <Suspense>
           <DateLineChart
-            :label="'Assemblies'"
-            :field="'metadata.submission_date'"
-            :title="'Assemblies submitted by month'"
-            :model="'assemblies'"
+            :label="'Reads'"
+            :field="'metadata.first_public'"
+            :title="'Reads submitted by month'"
+            :model="'reads'"
             :color="'#2c82e0'"
           />
         </Suspense>
@@ -26,9 +26,9 @@
       <div class="flex lg3 md3 sm12 xs12">
         <Suspense>
           <ContributorList
-            :field="'metadata.submitter'"
-            :model="'assemblies'"
-            :title="'Submitters'"
+            :field="'metadata.center_name'"
+            :model="'reads'"
+            :title="'Centers'"
             @list-created="getSubmitters"
           />
         </Suspense>
@@ -37,9 +37,9 @@
     <div class="row row-equal">
       <div class="flex sm12 xs12">
         <va-breadcrumbs class="va-title" color="primary">
-          <va-breadcrumbs-item :to="{ name: 'assembly-list', params: { savePosition: true } }" label="assemblies" />
+          <va-breadcrumbs-item :to="{ name: 'read-list', params: { savePosition: true } }" label="reads" />
           <va-breadcrumbs-item
-            v-if="router.currentRoute.value.name === 'assembly'"
+            v-if="router.currentRoute.value.name === 'read'"
             active
             :label="router.currentRoute.value.params.accession"
           />
@@ -51,18 +51,19 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { useRouter } from 'vue-router'
-  import ContributorList from '../../components/stats/ContributorList.vue'
   import { Contributor } from '../../data/types'
-  import { useAssemblyStore } from '../../stores/assembly-store'
   import DateLineChart from '../../components/charts/DateLineChart.vue'
   import PieChart from '../../components/charts/PieChart.vue'
+  import ContributorList from '../../components/stats/ContributorList.vue'
+  import { useRouter } from 'vue-router'
+  import { useReadStore } from '../../stores/read-store'
+
+  const readStore = useReadStore()
 
   const router = useRouter()
-  const assemblyStore = useAssemblyStore()
 
   function getSubmitters(value: Contributor[]) {
-    assemblyStore.submitters = [...value]
+    readStore.submitters = [...value]
   }
 </script>
 
