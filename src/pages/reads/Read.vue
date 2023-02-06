@@ -67,28 +67,14 @@
         </va-card>
       </div>
     </div>
-    <div v-for="key in Object.keys(read.metadata)" :key="key" class="row row-equal">
-      <div v-if="read.metadata[key]" class="flex lg12 md12 sm12 xs12">
-        <h6 class="va-h6">{{ key }}</h6>
-        <div v-if="read.metadata[key] && read.metadata[key].split(';').length > 1">
-          <ul class="va-unordered">
-            <li v-for="(v, index) in read.metadata[key].split(';')" :key="index">
-              {{ v }}
-            </li>
-          </ul>
-        </div>
-        <div v-else>
-          <p>{{ read.metadata[key] }}</p>
-        </div>
-      </div>
-    </div>
+    <Metadata :metadata="read.metadata" />
   </div>
 </template>
 <script setup lang="ts">
   import ReadService from '../../services/clients/ReadService'
   import { onMounted, ref } from 'vue'
   import { AxiosResponse } from 'axios'
-
+  import Metadata from '../../components/ui/Metadata.vue'
   const props = defineProps({
     accession: String,
   })

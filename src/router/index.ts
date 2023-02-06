@@ -23,12 +23,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: 'assemblies',
     path: '/assemblies',
-    component: () => import('../pages/assemblies/Assemblies.vue'),
+    component: () => import('../pages/assemblies/AssemblyPage.vue'),
     children: [
       {
         name: 'assembly-list',
         path: '',
-        component: () => import('../pages/assemblies/AssemblyList.vue'),
+        component: () => import('../pages/assemblies/Assemblies.vue'),
         meta: {
           name: 'assemblies',
         },
@@ -47,12 +47,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: 'reads',
     path: '/reads',
-    component: () => import('../pages/reads/Reads.vue'),
+    component: () => import('../pages/reads/ReadPage.vue'),
     children: [
       {
         name: 'read-list',
         path: '',
-        component: () => import('../pages/reads/ReadList.vue'),
+        component: () => import('../pages/reads/Reads.vue'),
         meta: {
           name: 'reads',
         },
@@ -71,7 +71,26 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: 'biosamples',
     path: '/biosamples',
-    component: () => import('../pages/biosamples/BioSample.vue'),
+    component: () => import('../pages/biosamples/BioSamplePage.vue'),
+    children: [
+      {
+        name: 'biosample-list',
+        path: '',
+        component: () => import('../pages/biosamples/BioSamples.vue'),
+        meta: {
+          name: 'biosamples',
+        },
+      },
+      {
+        name: 'biosample',
+        path: ':accession',
+        props: true,
+        component: () => import('../pages/biosamples/BioSample.vue'),
+        meta: {
+          name: 'biosamples',
+        },
+      },
+    ],
   },
 ]
 
@@ -87,7 +106,6 @@ const router = createRouter({
     // will retain current scroll position.
     if (to.params.savePosition) return {}
 
-    console.log('Hello')
     // scroll to anchor by returning the selector
     if (to.hash) {
       const position = { selector: to.hash }

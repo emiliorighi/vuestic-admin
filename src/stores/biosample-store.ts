@@ -8,8 +8,6 @@ const initSearchForm = {
   filter_option: null,
   sort_column: null,
   sort_order: null,
-  assembly_level: null,
-  submitter: null,
 }
 
 const initPagination = {
@@ -17,10 +15,10 @@ const initPagination = {
   limit: 10,
 }
 
-export const useAssemblyStore = defineStore('assembly', {
+export const useBioSampleStore = defineStore('biosample', {
   state: () => {
     return {
-      submitters: [] as Contributor[],
+      gals: [] as Contributor[],
       breadcrumbs: [] as BreadCrumb[],
       searchForm: { ...initSearchForm },
       pagination: { ...initPagination },

@@ -18,4 +18,12 @@
   body {
     margin: 0;
   }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+  .fade-enter-active {
+    transition: opacity 0.5s ease;
+  }
 </style>

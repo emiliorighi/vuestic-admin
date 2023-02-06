@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Contributor } from '../data/types'
+import { BreadCrumb, Contributor } from '../data/types'
 
 const initSearchForm = {
   start_date: null,
@@ -20,6 +20,7 @@ export const useReadStore = defineStore('read', {
   state: () => {
     return {
       submitters: [] as Contributor[],
+      breadcrumbs: [] as BreadCrumb[],
       searchForm: { ...initSearchForm },
       pagination: { ...initPagination },
     }

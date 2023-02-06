@@ -41,17 +41,19 @@ export default {
       },
     },
     {
-      name: 'reads',
+      name: 'read-list',
       displayName: 'menu.reads',
       meta: {
         icon: 'widgets',
+        name: 'reads',
       },
     },
     {
-      name: 'biosamples',
+      name: 'biosample-list',
       displayName: 'menu.biosamples',
       meta: {
         icon: 'hub',
+        name: 'biosamples',
       },
     },
   ] as INavigationRoute[],

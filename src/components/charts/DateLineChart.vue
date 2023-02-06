@@ -22,11 +22,13 @@
 
   function createLineChartData(data) {
     let submissionDates = {}
-    Object.keys(data).forEach((k: string) => {
-      const values = k.split('-')
-      const date = `${values[0]}-${values[1]}`
-      submissionDates[date] = submissionDates[date] ? submissionDates[date] + data[k] : data[k]
-    })
+    Object.keys(data)
+      .filter((k: string) => k.split('-').length > 1)
+      .forEach((k: string) => {
+        const values = k.split('-')
+        const date = `${values[0]}-${values[1]}`
+        submissionDates[date] = submissionDates[date] ? submissionDates[date] + data[k] : data[k]
+      })
     const sortedData = Object.keys(submissionDates)
       .sort((a, b) => new Date(a) > new Date(b))
       .map((k: string) => {

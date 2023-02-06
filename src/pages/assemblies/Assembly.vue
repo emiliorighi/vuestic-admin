@@ -76,9 +76,12 @@
       </div>
     </div>
     <div class="row row-equal">
-      <div v-if="showJBrowse" class="flex lg12 md12 sm12 xs12">
-        <Jbrowse2 :assembly="jbrowse.assembly" />
+      <div class="flex">
+        <Metadata :metadata="assembly.metadata" />
       </div>
+      <!-- <div v-if="showJBrowse" class="flex lg8 md8 sm12 xs12">
+        <Jbrowse2 :assembly="jbrowse.assembly" />
+      </div> -->
     </div>
   </div>
 </template>
@@ -88,6 +91,7 @@
   import { AxiosResponse } from 'axios'
   import Jbrowse2 from '../../components/genome-browser/Jbrowse2.vue'
   import { AssemblyAdapter } from '../../data/types'
+  import Metadata from '../../components/ui/Metadata.vue'
 
   const props = defineProps({
     accession: String,
