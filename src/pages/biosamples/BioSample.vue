@@ -3,7 +3,17 @@
     <div class="row row-equal align-center justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ biosample.accession }}</h1>
-        <va-button preset="primary" icon="pets">{{ biosample.scientific_name }}</va-button>
+        <div class="row align-center">
+          <div class="flex">
+            <va-button preset="primary" icon="pets">{{ biosample.scientific_name }}</va-button>
+          </div>
+          <div v-for="(dt, index) in relatedData" :key="index" class="flex">
+            <va-button-dropdown v-if="biosample[dt.key].length" round preset="primary">
+              <template #label> <va-icon :name="dt.icon" size="small" /> {{ dt.title }} </template>
+              <List :route="dt.route" :list="biosample[dt.key]" />
+            </va-button-dropdown>
+          </div>
+        </div>
       </div>
       <div class="flex">
         <div class="row row-equal align-center">
@@ -24,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="row row-equal justify-start">
+    <div class="row row-equal">
       <div v-if="biosample.metadata.GAL" class="flex">
         <va-card class="mb-4" color="danger">
           <va-card-content>
@@ -103,19 +113,11 @@
       </div>
     </div>
     <div class="row row-equal">
-      <div v-if="biosample.sub_samples.length" class="flex">
-        <List :route="'biosample'" :title="'related biosamples'" :list="biosample.sub_samples" />
-      </div>
-      <div v-if="biosample.experiments.length" class="flex">
-        <List :route="'read'" :title="'related reads'" :list="biosample.experiments" />
-      </div>
-      <div v-if="biosample.assemblies.length" class="flex">
-        <List :route="'assembly'" :title="'related assemblies'" :list="biosample.assemblies" />
-      </div>
-    </div>
-    <div class="row row-equal">
       <div class="flex lg6 md6 sm12 xs12">
-        <Metadata :metadata="biosample.metadata" />
+        <va-card-title>metatada</va-card-title>
+        <va-card-content style="max-height: 350px; overflow-y: scroll">
+          <Metadata :metadata="biosample.metadata" />
+        </va-card-content>
       </div>
       <div
         v-if="biosample.latitude && biosample.longitude && Number(biosample.latitude) && Number(biosample.longitude)"
@@ -144,6 +146,26 @@
     accession: String,
   })
 
+  const relatedData = [
+    {
+      title: 'Related BioSamples',
+      icon: 'hubs',
+      key: 'sub_samples',
+      route: 'biosample',
+    },
+    {
+      title: 'Related Reads',
+      icon: 'widgets',
+      key: 'experiments',
+      route: 'read',
+    },
+    {
+      title: 'Related Assemblies',
+      icon: 'library_books',
+      key: 'assemblies',
+      route: 'assembly',
+    },
+  ]
   const biosample = ref({})
 
   onMounted(async () => {

@@ -1,7 +1,7 @@
 <template>
   <va-card class="d-flex">
     <va-card-title>
-      <div class="row justify-end align-center">
+      <div class="row">
         <div class="flex">total: {{ total }}</div>
       </div>
     </va-card-title>

@@ -3,8 +3,19 @@
     <div class="row row-equal align-center justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ assembly.assembly_name }}</h1>
-        <va-button preset="primary" icon="pets">{{ assembly.scientific_name }}</va-button>
-        <va-button preset="primary" icon="hub">{{ assembly.sample_accession }}</va-button>
+        <div class="row">
+          <div class="flex">
+            <va-button preset="primary" icon="pets">{{ assembly.scientific_name }}</va-button>
+          </div>
+          <div class="flex">
+            <va-button
+              :to="{ name: 'biosample', params: { accession: assembly.sample_accession } }"
+              preset="primary"
+              icon="hub"
+              >{{ assembly.sample_accession }}</va-button
+            >
+          </div>
+        </div>
       </div>
       <div class="flex">
         <div class="row row-equal align-center">
@@ -76,12 +87,20 @@
       </div>
     </div>
     <div class="row row-equal">
-      <div class="flex">
-        <Metadata :metadata="assembly.metadata" />
+      <div class="flex lg4 md4 sm12 xs12">
+        <va-card-title>metatada</va-card-title>
+        <va-card-content>
+          <Metadata :metadata="assembly.metadata" />
+        </va-card-content>
       </div>
-      <!-- <div v-if="showJBrowse" class="flex lg8 md8 sm12 xs12">
-        <Jbrowse2 :assembly="jbrowse.assembly" />
-      </div> -->
+      <div v-if="showJBrowse" class="flex lg8 md8 sm12 xs12">
+        <va-card>
+          <va-card-title> genome browser </va-card-title>
+          <va-card-content>
+            <Jbrowse2 :assembly="jbrowse.assembly" />
+          </va-card-content>
+        </va-card>
+      </div>
     </div>
   </div>
 </template>

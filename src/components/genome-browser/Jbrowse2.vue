@@ -1,5 +1,5 @@
 <template>
-  <div ref="wrapper"></div>
+  <div ref="wrapper" style="height: inherit; width: inherit"></div>
 </template>
 
 <script setup lang="ts">
