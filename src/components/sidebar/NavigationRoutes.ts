@@ -33,6 +33,14 @@ export default {
       },
     },
     {
+      name: 'organism-list',
+      displayName: 'menu.organisms',
+      meta: {
+        icon: 'pets',
+        name: 'organisms',
+      },
+    },
+    {
       name: 'assembly-list',
       displayName: 'menu.assemblies',
       meta: {

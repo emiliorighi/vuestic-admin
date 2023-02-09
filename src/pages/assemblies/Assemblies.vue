@@ -68,37 +68,7 @@
       </va-card-actions>
     </va-form>
     <va-card-content>
-      <va-data-table :items="assemblies" :columns="columns">
-        <template #header(assembly_level)="{ label }">{{ label }}</template>
-        <template #header(contig_n50)="{ label }">{{ label }}</template>
-        <template #cell(assembly_level)="{ rowData }"
-          ><va-chip size="small">{{ rowData.metadata.assembly_level }}</va-chip>
-        </template>
-        <template #cell(assembly_name)="{ rowData }">
-          <va-chip
-            outline
-            size="small"
-            :to="{ name: 'assembly', params: { accession: rowData.accession, savePosition: true } }"
-            >{{ rowData.assembly_name }}</va-chip
-          >
-          <!-- <router-link :to="{name: 'assembly', params: {accession:rowData.accession}}">{{ rowData.assembly_name }}</router-link> -->
-        </template>
-        <template #cell(contig_n50)="{ rowData }">
-          {{ rowData.metadata.contig_n50 / getContigN50(rowData.metadata.contig_n50)?.value }}
-          {{ getContigN50(rowData.metadata.contig_n50)?.name }}
-        </template>
-        <template #cell(size)="{ rowData }">
-          {{ rowData.metadata.estimated_size / getContigN50(rowData.metadata.estimated_size)?.value }}
-          {{ getContigN50(rowData.metadata.estimated_size)?.name }}
-        </template>
-        <template #cell(submission_date)="{ rowData }">
-          {{ rowData.metadata.submission_date }}
-        </template>
-        <template #cell(submitter)="{ rowData }">
-          {{ rowData.metadata.submitter }}
-        </template>
-        <template #cell(chromosomes)="{ rowData }">{{ rowData.chromosomes.length || '' }}</template>
-      </va-data-table>
+      <DataTable :items="assemblies" :columns="columns" />
       <div class="row align-center justify-center">
         <div class="flex">
           <va-pagination
@@ -122,23 +92,9 @@
   import { onMounted, ref, watch } from 'vue'
   import { AxiosResponse } from 'axios'
   import { useAssemblyStore } from '../../stores/assembly-store'
+  import DataTable from '../../components/ui/DataTable.vue'
 
   const assemblyStore = useAssemblyStore()
-
-  const contigs = [
-    {
-      name: 'Kbp',
-      value: 1000,
-    },
-    {
-      name: 'Mbp',
-      value: 1000000,
-    },
-    {
-      name: 'Gbp',
-      value: 1000000000,
-    },
-  ]
 
   const initDateRange = {
     start: null,
@@ -187,12 +143,6 @@
     assemblyStore.resetForm()
     assemblyStore.resetPagination()
     getAssemblies(await AssemblyService.getAssemblies({ ...assemblyStore.pagination }))
-  }
-
-  function getContigN50(number: number) {
-    return contigs.sort((a, b) => {
-      return Math.abs(a.value - number) - Math.abs(b.value - number)
-    })[0]
   }
 
   function getAssemblies({ data }: AxiosResponse) {

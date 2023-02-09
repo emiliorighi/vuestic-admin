@@ -12,6 +12,7 @@
   Leaflet.Icon.Default.imagePath = '/vendor/leaflet/'
 
   const props = defineProps({
+    coordinates: Array,
     latitude: Number,
     longitude: Number,
     html: String,

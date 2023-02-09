@@ -57,32 +57,7 @@
       </va-card-actions>
     </va-form>
     <va-card-content>
-      <va-data-table :items="reads" :columns="columns">
-        <template #cell(experiment_accession)="{ rowData }">
-          <va-chip
-            outline
-            size="small"
-            :to="{ name: 'read', params: { accession: rowData.experiment_accession, savePosition: true } }"
-            >{{ rowData.experiment_accession }}</va-chip
-          >
-        </template>
-        <template #cell(experiment_title)="{ rowData }">
-          {{ rowData.metadata.experiment_title }}
-        </template>
-        <template #cell(instrument_platform)="{ rowData }">
-          <va-chip size="small"> {{ rowData.instrument_platform }}</va-chip>
-        </template>
-
-        <template #cell(center_name)="{ rowData }">
-          {{ rowData.metadata.center_name }}
-        </template>
-        <template #cell(scientific_name)="{ rowData }">
-          {{ rowData.metadata.scientific_name }}
-        </template>
-        <template #cell(first_created)="{ rowData }">
-          {{ rowData.metadata.first_created }}
-        </template>
-      </va-data-table>
+      <DataTable :items="reads" :columns="columns" />
       <div class="row align-center justify-center">
         <div class="flex">
           <va-pagination
@@ -106,6 +81,7 @@
   import { onMounted, ref, watch } from 'vue'
   import { AxiosResponse } from 'axios'
   import { useReadStore } from '../../stores/read-store'
+  import DataTable from '../../components/ui/DataTable.vue'
 
   const readStore = useReadStore()
   const columns = [

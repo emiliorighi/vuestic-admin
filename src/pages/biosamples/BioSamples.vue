@@ -53,26 +53,7 @@
       </va-card-actions>
     </va-form>
     <va-card-content>
-      <va-data-table :items="biosamples" :columns="columns">
-        <template #cell(accession)="{ rowData }">
-          <va-chip
-            outline
-            :to="{ name: 'biosample', params: { accession: rowData.accession, savePosition: true } }"
-            size="small"
-          >
-            {{ rowData.accession }}
-          </va-chip>
-        </template>
-        <template #cell(habitat)="{ rowData }">
-          {{ rowData.metadata.habitat }}
-        </template>
-        <template #cell(collection_date)="{ rowData }">
-          {{ rowData.metadata.collection_date }}
-        </template>
-        <template #cell(gal)="{ rowData }">
-          {{ rowData.metadata.GAL }}
-        </template>
-      </va-data-table>
+      <DataTable :items="biosamples" :columns="columns" />
       <div class="row align-center justify-center">
         <div class="flex">
           <va-pagination
@@ -96,6 +77,7 @@
   import { onMounted, ref, watch } from 'vue'
   import { AxiosResponse } from 'axios'
   import { useBioSampleStore } from '../../stores/biosample-store'
+  import DataTable from '../../components/ui/DataTable.vue'
 
   const biosampleStore = useBioSampleStore()
 

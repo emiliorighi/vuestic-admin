@@ -21,6 +21,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../pages/taxons/Taxon.vue'),
   },
   {
+    name: 'organisms',
+    path: '/organisms',
+    component: () => import('../pages/organisms/OrganismPage.vue'),
+  },
+  {
     name: 'assemblies',
     path: '/assemblies',
     component: () => import('../pages/assemblies/AssemblyPage.vue'),
@@ -88,6 +93,30 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../pages/biosamples/BioSample.vue'),
         meta: {
           name: 'biosamples',
+        },
+      },
+    ],
+  },
+  {
+    name: 'organisms',
+    path: '/organisms',
+    component: () => import('../pages/organisms/OrganismPage.vue'),
+    children: [
+      {
+        name: 'organism-list',
+        path: '',
+        component: () => import('../pages/organisms/Organisms.vue'),
+        meta: {
+          name: 'organisms',
+        },
+      },
+      {
+        name: 'organism',
+        path: ':taxid',
+        props: true,
+        component: () => import('../pages/organisms/Organism.vue'),
+        meta: {
+          name: 'organisms',
         },
       },
     ],

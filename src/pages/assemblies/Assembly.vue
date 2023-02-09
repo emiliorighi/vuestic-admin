@@ -1,6 +1,6 @@
 <template>
   <div v-if="assembly.metadata">
-    <div class="row row-equal align-center justify-space-between">
+    <div class="row row-equal justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ assembly.assembly_name }}</h1>
         <div class="row">

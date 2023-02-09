@@ -1,6 +1,6 @@
 <template>
   <div v-if="read.metadata">
-    <div class="row row-equal align-center justify-space-between">
+    <div class="row row-equal justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ read.metadata.experiment_title }}</h1>
         <div class="row">
@@ -93,6 +93,7 @@
   import { onMounted, ref } from 'vue'
   import { AxiosResponse } from 'axios'
   import Metadata from '../../components/ui/Metadata.vue'
+
   const props = defineProps({
     accession: String,
   })

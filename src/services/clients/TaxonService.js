@@ -6,7 +6,7 @@ class TaxonService {
   getTaxon(name) {
     return base.get(`/taxons/${name}`)
   }
-  searchTaxon(params) {
+  getTaxons(params) {
     return base.get('/taxons', { params: params })
   }
   getTaxonCoordinates(params) {

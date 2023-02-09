@@ -1,6 +1,6 @@
 <template>
-  <div v-if="biosample.metadata">
-    <div class="row row-equal align-center justify-space-between">
+  <div v-if="showData">
+    <div class="row row-equal justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ biosample.accession }}</h1>
         <div class="row align-center">
@@ -133,6 +133,11 @@
       </div>
     </div>
   </div>
+  <div v-else>
+    <h3 class="va-h3">
+      {{ error }}
+    </h3>
+  </div>
 </template>
 <script setup lang="ts">
   import BioSampleService from '../../services/clients/BioSampleService'
@@ -142,6 +147,8 @@
   import List from '../../components/ui/List.vue'
   import LeafletMap from '../../components/maps/LeafletMap.vue'
 
+  const showData = ref(false)
+  const error = ref('')
   const props = defineProps({
     accession: String,
   })
@@ -169,7 +176,13 @@
   const biosample = ref({})
 
   onMounted(async () => {
-    getRead(await BioSampleService.getBioSample(props.accession))
+    try {
+      getRead(await BioSampleService.getBioSample(props.accession))
+      showData.value = true
+    } catch (e) {
+      error.value = props.accession + ' ' + e.response.data.message
+      showData.value = false
+    }
   })
 
   function getRead({ data }: AxiosResponse) {
