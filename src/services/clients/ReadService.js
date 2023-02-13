@@ -9,6 +9,13 @@ class ReadsService {
   getRead(accession) {
     return base.get(`/reads/${accession}`)
   }
+  importRead(accession) {
+    return base.post(`/reads/${accession}`)
+  }
+
+  deleteRead(accession) {
+    return base.delete(`/reads/${accession}`)
+  }
 }
 
 export default new ReadsService()

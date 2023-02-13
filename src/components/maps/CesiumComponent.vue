@@ -7,7 +7,8 @@
   import * as Cesium from 'cesium'
   import pin_drop from '../assets/pin.svg'
 
-  const accessToken = import.meta.env.VITE_CESIUM_TOKEN
+  const accessToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1YWRkOTdlNy03ZDkzLTQwMWYtYWZmNC05MWNmMWM3NThlMGIiLCJpZCI6MTAyNjI1LCJpYXQiOjE2NTkwMDUzMTF9.2hswNBgOjEve43OMrT1ouf_l9nTBqRvf8RT9FgSCJCA'
   const props = defineProps({
     geojson: Object,
     counter: Number,

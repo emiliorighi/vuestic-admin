@@ -1,16 +1,17 @@
 import { defineStore } from 'pinia'
 import { Contributor, BreadCrumb } from '../data/types'
+import { OrganismSearchForm } from '../data/types'
 
-const initSearchForm = {
-  insdc_status: null,
-  goat_status: null,
-  parent_taxid: null,
-  bioproject: null,
-  target_list_status: null,
-  filter: null,
-  filter_option: null,
-  sort_column: null,
-  sort_order: null,
+const initSearchForm: OrganismSearchForm = {
+  insdc_status: '',
+  goat_status: '',
+  parent_taxid: '',
+  bioproject: '',
+  target_list_status: '',
+  filter: '',
+  filter_option: '',
+  sort_column: '',
+  sort_order: '',
 }
 
 const initPagination = {

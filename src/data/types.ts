@@ -22,6 +22,43 @@ interface Node {
   annotations?: number
 }
 
+export type Filter = {
+  label: string
+  placeholder?: string
+  type: 'input' | 'select' | 'date'
+  options?: Array<string>
+  key: string
+}
+
+interface SearchForm {
+  filter: string
+  filter_option: string
+  sort_column: string
+  sort_order: string
+  start_date?: string
+  end_date?: string
+}
+
+export interface OrganismSearchForm extends SearchForm {
+  insdc_status: string
+  goat_status: string
+  parent_taxid: string
+  bioproject: string
+  target_list_status: string
+}
+
+export type BioSampleSearchForm = SearchForm
+
+export interface ReadSearchForm extends SearchForm {
+  center: string
+}
+export interface AssemblySearchForm extends SearchForm {
+  assembly_level: string
+  submitter: string
+}
+
+export type ModelSearchForm = OrganismSearchForm | AssemblySearchForm | ReadSearchForm | BioSampleSearchForm
+
 export interface BioProjectNode extends Node {
   title: string
   accession: string

@@ -1,9 +1,9 @@
 <template>
-  <div v-if="showData">
+  <!-- <div v-if="showData">
     <div class="row row-equal justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ organism.scientific_name }}</h1>
-        <!-- <div class="row align-center">
+         <div class="row align-center">
           <div class="flex">
             <va-button preset="primary" icon="pets">{{ biosample.scientific_name }}</va-button>
           </div>
@@ -13,7 +13,7 @@
               <List :route="dt.route" :list="biosample[dt.key]" />
             </va-button-dropdown>
           </div>
-        </div> -->
+        </div> 
       </div>
       <div class="flex">
         <div class="row row-equal align-center">
@@ -137,7 +137,8 @@
     <h3 class="va-h3">
       {{ error }}
     </h3>
-  </div>
+  </div> -->
+  <div />
 </template>
 <script setup lang="ts">
   import OrganismService from '../../services/clients/OrganismService'

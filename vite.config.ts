@@ -30,11 +30,11 @@ export default ({ mode }) => {
         },
         // Enable esbuild polyfill plugins
         plugins: [
-          NodeGlobalsPolyfillPlugin({
-            process: true,
-            buffer: true,
-          }),
-          NodeModulesPolyfillPlugin(),
+          // NodeGlobalsPolyfillPlugin({
+          //   process: true,
+          //   buffer: true,
+          // }),
+          // NodeModulesPolyfillPlugin(),
         ],
       },
     },
@@ -43,7 +43,7 @@ export default ({ mode }) => {
         plugins: [
           // Enable rollup polyfills plugin
           // used during production bundling
-          rollupNodePolyFill(),
+          // rollupNodePolyFill(),
         ],
       },
     },

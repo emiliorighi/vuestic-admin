@@ -112,9 +112,9 @@
         </va-card>
       </div>
     </div>
+    <va-card-title>metatada</va-card-title>
     <div class="row row-equal">
       <div class="flex lg6 md6 sm12 xs12">
-        <va-card-title>metatada</va-card-title>
         <va-card-content style="max-height: 350px; overflow-y: scroll">
           <Metadata :metadata="biosample.metadata" />
         </va-card-content>

@@ -5,57 +5,13 @@
         <div class="flex">total: {{ total }}</div>
       </div>
     </va-card-title>
-    <va-form tag="form" @submit.prevent="handleSubmit">
-      <va-card-content>
-        <div class="row align-center justify-start">
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-input
-              v-model="readStore.searchForm.filter"
-              label="search read"
-              placeholder="Search by species, taxid, experiment title or instrument platform"
-            ></va-input>
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select
-              v-model="readStore.searchForm.filter_option"
-              label="filter by"
-              :options="['taxid', 'experiment_title', 'instrument_platform', 'scientific_name']"
-            />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-date-input
-              v-model="dateRange"
-              :format-date="(date:Date) => date.toISOString().substring(0,10)"
-              label="Date"
-              placeholder="select a date range"
-              style="width: 100%"
-              mode="range"
-              type="month"
-              :allowed-months="(date:Date) => date <= new Date()"
-              :allowed-years="(date:Date) => date <= new Date()"
-            />
-          </div>
-          <div v-if="readStore.submitters.length" class="flex lg4 md4 sm12 xs12">
-            <va-select
-              v-model="readStore.searchForm.center"
-              searchable
-              label="centers"
-              :options="readStore.submitters.map((s) => s.name)"
-            />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select v-model="readStore.searchForm.sort_column" label="sort by" :options="['first_created']" />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select v-model="readStore.searchForm.sort_order" label="sorting order" :options="['asc', 'desc']" />
-          </div>
-        </div>
-      </va-card-content>
-      <va-card-actions align="between">
-        <va-button type="submit">Search</va-button>
-        <va-button color="danger" @click="reset()">Reset</va-button>
-      </va-card-actions>
-    </va-form>
+    <Filters
+      :search-form="readStore.searchForm"
+      :filters="filters"
+      @on-reset="reset"
+      @on-submit="handleSubmit"
+      @on-date-change="handleDate"
+    />
     <va-card-content>
       <DataTable :items="reads" :columns="columns" />
       <div class="row align-center justify-center">
@@ -82,6 +38,8 @@
   import { AxiosResponse } from 'axios'
   import { useReadStore } from '../../stores/read-store'
   import DataTable from '../../components/ui/DataTable.vue'
+  import Filters from '../../components/ui/Filters.vue'
+  import { Filter } from '../../data/types'
 
   const readStore = useReadStore()
   const columns = [
@@ -92,18 +50,38 @@
     'center_name',
     'first_created',
   ]
-  const initDateRange = {
-    start: null,
-    end: null,
-  }
-  const dateRange = ref({ ...initDateRange })
 
-  watch(dateRange, () => {
-    if (dateRange.value.start)
-      readStore.searchForm.start_date = new Date(dateRange.value.start).toISOString().split('T')[0]
-    if (dateRange.value.end) readStore.searchForm.end_date = new Date(dateRange.value.end).toISOString().split('T')[0]
-  })
-
+  const filters: Filter[] = [
+    {
+      label: 'search read',
+      placeholder: 'Search by species, taxid, experiment title or instrument platform',
+      key: 'filter',
+      type: 'input',
+    },
+    {
+      label: 'filter by',
+      key: 'filter_option',
+      type: 'select',
+      options: ['taxid', 'experiment_title', 'instrument_platform', 'scientific_name'],
+    },
+    {
+      label: 'sort_column',
+      key: 'sort_column',
+      type: 'select',
+      options: ['first_created'],
+    },
+    {
+      label: 'sort_order',
+      key: 'sort_order',
+      type: 'select',
+      options: ['asc', 'desc'],
+    },
+    {
+      label: 'Date',
+      key: 'date',
+      type: 'date',
+    },
+  ]
   const offset = ref(1 + readStore.pagination.offset)
 
   const reads = ref([])
@@ -121,9 +99,10 @@
     readStore.pagination.offset = value - 1
     getReads(await ReadService.getReads({ ...readStore.searchForm, ...readStore.pagination }))
   }
-
+  function handleDate(payload: Record<string, any>) {
+    readStore.searchForm = { ...readStore.searchForm, ...payload }
+  }
   async function reset() {
-    dateRange.value = { ...initDateRange }
     offset.value = 1
     readStore.resetForm()
     readStore.resetPagination()

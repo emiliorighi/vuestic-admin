@@ -5,79 +5,37 @@
         <div class="flex">total: {{ total }}</div>
       </div>
     </va-card-title>
-    <va-form tag="form" @submit.prevent="handleSubmit">
-      <va-card-content>
-        <div class="row align-center justify-start">
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-input
-              v-model="organismStore.searchForm.filter"
-              label="search organism"
-              placeholder="Search by species, taxid, common_name or tolid"
-            ></va-input>
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select
-              v-model="organismStore.searchForm.filter_option"
-              label="filter by"
-              :options="['taxid', 'common_name', 'scientific_name', 'tolid']"
-            />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select
-              v-model="organismStore.searchForm.parent_taxid"
-              label="search parent taxon"
-              placeholder="Search by taxon name"
-              searchable
-              :options="taxons"
-              text-by="name"
-              track-by="taxid"
-              value-by="taxid"
-              @update-search="searchTaxon"
-            />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select
-              v-model="organismStore.searchForm.bioproject"
-              label="search BioProject"
-              placeholder="Search by project title"
-              searchable
-              :options="bioprojects"
-              text-by="title"
-              track-by="accession"
-              value-by="accession"
-              @update-search="searchBioProject"
-            />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select v-model="organismStore.searchForm.insdc_status" label="INSDC status" :options="insdc_status" />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select v-model="organismStore.searchForm.goat_status" label="GoaT status" :options="goat_status" />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select
-              v-model="organismStore.searchForm.target_list_status"
-              label="Target list status"
-              :options="target_list_status"
-            />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select
-              v-model="organismStore.searchForm.sort_column"
-              label="sort by"
-              :options="['scientific_name', 'taxid', 'tolid']"
-            />
-          </div>
-          <div class="flex lg4 md4 sm12 xs12">
-            <va-select v-model="organismStore.searchForm.sort_order" label="sorting order" :options="['asc', 'desc']" />
-          </div>
+    <va-card-content>
+      <div class="row align-center justify-end">
+        <div class="flex lg4 md4 sm12 xs12">
+          <va-select
+            v-model="organismStore.searchForm.parent_taxid"
+            label="search parent taxon"
+            placeholder="Search by taxon name"
+            searchable
+            :options="taxons"
+            text-by="name"
+            track-by="taxid"
+            value-by="taxid"
+            @update-search="searchTaxon"
+          />
         </div>
-      </va-card-content>
-      <va-card-actions align="between">
-        <va-button type="submit">Search</va-button>
-        <va-button color="danger" @click="reset()">Reset</va-button>
-      </va-card-actions>
-    </va-form>
+        <div class="flex lg4 md4 sm12 xs12">
+          <va-select
+            v-model="organismStore.searchForm.bioproject"
+            label="search BioProject"
+            placeholder="Search by project title"
+            searchable
+            :options="bioprojects"
+            text-by="title"
+            track-by="accession"
+            value-by="accession"
+            @update-search="searchBioProject"
+          />
+        </div>
+      </div>
+    </va-card-content>
+    <Filters :search-form="organismStore.searchForm" :filters="filters" @on-reset="reset" @on-submit="handleSubmit" />
     <va-card-content>
       <DataTable :items="organisms" :columns="columns" />
       <div class="row align-center justify-center">
@@ -106,23 +64,66 @@
   import DataTable from '../../components/ui/DataTable.vue'
   import BioProjectService from '../../services/clients/BioProjectService'
   import TaxonService from '../../services/clients/TaxonService'
+  import Filters from '../../components/ui/Filters.vue'
+  import { Filter } from '../../data/types'
 
-  const insdc_status = [
-    'Sample Acquired',
-    'Biosample Submitted',
-    'Reads Submitted',
-    'Assemblies Submitted',
-    'Annotations Created',
+  const filters: Filter[] = [
+    {
+      label: 'search organism',
+      placeholder: 'Search by species, taxid, common_name or tolid',
+      key: 'filter',
+      type: 'input',
+    },
+    {
+      label: 'filter by',
+      key: 'filter_option',
+      type: 'select',
+      options: ['taxid', 'common_name', 'scientific_name', 'tolid'],
+    },
+    {
+      label: 'INSDC status',
+      key: 'insdc_status',
+      type: 'select',
+      options: [
+        'Sample Acquired',
+        'Biosample Submitted',
+        'Reads Submitted',
+        'Assemblies Submitted',
+        'Annotations Created',
+      ],
+    },
+    {
+      label: 'GoaT status',
+      key: 'goat_status',
+      type: 'select',
+      options: [
+        'Sample Collected',
+        'Sample Acquired',
+        'Data Generation',
+        'In Assembly',
+        'INSDC Submitted',
+        'Publication Available',
+      ],
+    },
+    {
+      label: 'target list status',
+      key: 'target_list_status',
+      type: 'select',
+      options: ['long_list', 'family_representative', 'other_priority'],
+    },
+    {
+      label: 'sort by',
+      key: 'sort_column',
+      type: 'select',
+      options: ['scientific_name', 'taxid', 'tolid'],
+    },
+    {
+      label: 'sort order',
+      key: 'sort_order',
+      type: 'select',
+      options: ['asc', 'desc'],
+    },
   ]
-  const goat_status = [
-    'Sample Collected',
-    'Sample Acquired',
-    'Data Generation',
-    'In Assembly',
-    'INSDC Submitted',
-    'Publication Available',
-  ]
-  const target_list_status = ['long_list', 'family_representative', 'other_priority']
 
   const organismStore = useOrganismStore()
 
@@ -147,15 +148,14 @@
   watch(
     () => organismStore.searchForm.bioproject,
     (bioproject) => {
-      // console.log(bioproject)
-      // if(bioproject)
+      handleSubmit()
     },
   )
 
   watch(
     () => organismStore.searchForm.parent_taxid,
     (parent) => {
-      console.log(parent)
+      handleSubmit()
     },
   )
 
@@ -167,6 +167,7 @@
     organismStore.resetPagination()
     getOrganisms(await OrganismService.getOrganisms({ ...organismStore.searchForm, ...organismStore.pagination }))
   }
+
   async function handlePagination(value: number) {
     organismStore.pagination.offset = value - 1
     getOrganisms(await OrganismService.getOrganisms({ ...organismStore.searchForm, ...organismStore.pagination }))
@@ -191,7 +192,6 @@
     }
   }
   async function searchTaxon(value: string) {
-    console.log(value)
     if (value.length >= 3) {
       const { data } = await TaxonService.getTaxons({ filter: value })
       taxons.value = [...data.data]

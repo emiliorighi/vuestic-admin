@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
 import { Contributor, BreadCrumb } from '../data/types'
+import { BioSampleSearchForm } from '../data/types'
 
-const initSearchForm = {
-  start_date: null,
-  end_date: null,
-  filter: null,
-  filter_option: null,
-  sort_column: null,
-  sort_order: null,
+const initSearchForm: BioSampleSearchForm = {
+  start_date: '',
+  end_date: '',
+  filter: '',
+  filter_option: '',
+  sort_column: '',
+  sort_order: '',
 }
 
 const initPagination = {

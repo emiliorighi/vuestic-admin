@@ -1,15 +1,16 @@
 import { defineStore } from 'pinia'
 import { Contributor, BreadCrumb } from '../data/types'
+import { AssemblySearchForm } from '../data/types'
 
-const initSearchForm = {
-  start_date: null,
-  end_date: null,
-  filter: null,
-  filter_option: null,
-  sort_column: null,
-  sort_order: null,
-  assembly_level: null,
-  submitter: null,
+const initSearchForm: AssemblySearchForm = {
+  start_date: '',
+  end_date: '',
+  filter: '',
+  filter_option: '',
+  sort_column: '',
+  sort_order: '',
+  assembly_level: '',
+  submitter: '',
 }
 
 const initPagination = {
