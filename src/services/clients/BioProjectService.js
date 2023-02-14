@@ -6,14 +6,14 @@ class BioProjectService {
   getBioProject(accession) {
     return base.get(`/bioprojects/${accession}`)
   }
+  getBioProjectCoordinates(accession) {
+    return base.get(`/bioprojects/${accession}/coordinates`)
+  }
   getBioprojects(params) {
     return base.get('/bioprojects', { params: params })
   }
   searchBioproject(params) {
     return base.get('/bioprojects', { params: params })
-  }
-  getBioProjectCoordinates(params) {
-    return base.get('/coordinates/node', { params: params })
   }
 }
 

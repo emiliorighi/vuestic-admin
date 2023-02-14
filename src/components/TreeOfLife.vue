@@ -1,82 +1,98 @@
 <template>
-  <div class="row">
-    <div class="flex lg12 md12 sm12 xs12">
-      <va-card class="custom-card">
-        <va-card-title>
-          <div class="row justify--space-between align--center">
-            <div class="flex">Tree of Life</div>
-            <div class="flex">
-              <va-button-dropdown
-                size="small"
-                split
-                outline
-                :label="`download ${downloadType}`"
-                @main-button-click="downloadType === 'svg' ? downloadSVGImage() : downloadPGNImage()"
-              >
-                <ul>
-                  <li>
-                    <va-button flat @click="downloadType = 'svg'"> SVG </va-button>
-                  </li>
-                  <li>
-                    <va-button flat @click="downloadType = 'png'"> PNG </va-button>
-                  </li>
-                </ul>
-              </va-button-dropdown>
-            </div>
-          </div>
-        </va-card-title>
-        <va-card-content>
-          <div ref="tooltip" class="tooltip">
-            <va-card v-if="showDetails" stripe :stripe-color="selectedNode.color" class="box" style="padding: 10px">
-              <div class="row align--center justify--space-between">
-                <div class="flex">
-                  <p style="text-align: start; font-size: 16px">{{ `${selectedNode.name} (${selectedNode.rank})` }}</p>
-                </div>
-                <div class="flex">
-                  <va-icon name="close" @click="showDetails = false" />
-                </div>
-              </div>
-              <va-divider />
-              <div class="row">
-                <div class="flex text--secondary" style="font-size: 16px">
-                  <p style="text-align: start">{{ `taxid: ${selectedNode.taxid}` }}</p>
-                </div>
-              </div>
-              <div v-if="selectedNode.leaves" class="row">
-                <div class="flex text--secondary" style="font-size: 16px">
-                  <p style="text-align: start">{{ `organisms: ${selectedNode.leaves}` }}</p>
-                </div>
-              </div>
-              <va-divider />
-              <div class="row align--center justify--space-between">
-                <div class="flex">
-                  <va-button
-                    size="small"
-                    outline
-                    @click="toPageDetails({ name: 'taxons', params: { id: selectedNode.taxid } })"
-                    >Details</va-button
-                  >
-                </div>
-                <div v-if="selectedNode.leaves" class="flex">
-                  <va-button size="small" outline :to="{ name: 'tree', params: { taxid: selectedNode.taxid } }"
-                    >Tree</va-button
-                  >
-                </div>
-              </div>
-            </va-card>
-          </div>
-          <svg ref="tree" class="tree-svg"></svg>
-        </va-card-content>
-      </va-card>
-    </div>
-  </div>
+  <va-card class="custom-card">
+    <va-card-title>
+      <div class="row justify-space-between align-center">
+        <div class="flex">
+          <va-badge transparent :text="taxonomyStore.breadcrumbs.length">
+            <va-button preset="secondary" icon="history" size="small" @click="showModal = true">History</va-button>
+          </va-badge>
+        </div>
+        <div class="flex">
+          <va-button-dropdown
+            size="small"
+            split
+            :label="`Download ${downloadType}`"
+            @main-button-click="downloadType === 'svg' ? downloadSVGImage() : downloadPGNImage()"
+          >
+            <ul>
+              <li>
+                <va-button preset="plain" @click="downloadType = 'svg'"> SVG </va-button>
+              </li>
+              <li>
+                <va-button preset="plain" @click="downloadType = 'png'"> PNG </va-button>
+              </li>
+            </ul>
+          </va-button-dropdown>
+        </div>
+      </div>
+    </va-card-title>
+    <va-card-content v-if="taxName">
+      <h2 style="text-align: center" class="va-h6">{{ taxName }}</h2>
+    </va-card-content>
+    <va-card-content>
+      <div ref="tooltip" class="tooltip">
+        <va-card v-if="showDetails" stripe :stripe-color="selectedNode.color" class="box">
+          <va-card-content style="text-align: start">
+            <va-list>
+              <va-list-item>
+                <va-list-item-section>
+                  <va-list-item-label>
+                    {{ `${selectedNode.name} (${selectedNode.rank})` }}
+                  </va-list-item-label>
+
+                  <va-list-item-label caption>
+                    <p class="va-title">taxid: {{ selectedNode.taxid }}</p>
+                    <p v-if="selectedNode.leaves" class="va-title">organisms: {{ selectedNode.leaves }}</p>
+                  </va-list-item-label>
+                </va-list-item-section>
+                <va-list-item-section icon>
+                  <va-icon color="danger" name="close" @click="showDetails = false" />
+                </va-list-item-section>
+              </va-list-item>
+            </va-list>
+          </va-card-content>
+          <va-card-actions align="between">
+            <va-button size="small" @click="$emit('toOrganismList', selectedNode.taxid)">see organisms</va-button>
+            <va-button v-if="selectedNode.leaves" size="small" @click="updateTree(selectedNode)"
+              >generate tree</va-button
+            >
+          </va-card-actions>
+        </va-card>
+      </div>
+      <svg ref="tree" class="tree-svg"></svg>
+    </va-card-content>
+  </va-card>
+  <va-modal v-model="showModal">
+    <va-timeline vertical>
+      <va-timeline-item
+        v-for="(bc, index) in taxonomyStore.breadcrumbs"
+        :key="index"
+        :active="bc.name === taxName ? true : undefined"
+      >
+        <template #before>
+          <span class="title title--danger va-timeline-item__text"> {{ bc.name }} ({{ bc.rank }}) </span>
+        </template>
+        <template #after>
+          <va-chip :disabled="bc.name === taxName" class="mb-0" @click="goBack(bc)"> Go </va-chip>
+          <!-- <va-card stripe class="mb-0">
+                  <va-card-content>
+                    <p></p>{{ bc.taxid }}</va-card-content>
+                </va-card> -->
+        </template>
+      </va-timeline-item>
+    </va-timeline>
+  </va-modal>
 </template>
-<script setup>
+<script setup lang="ts">
   import { reactive, onMounted, ref, computed } from 'vue'
   import * as d3 from 'd3'
   import { useRouter } from 'vue-router'
   import { Canvg } from 'canvg'
+  import { useTaxonomyStore } from '../stores/taxonomy-store'
 
+  const taxonomyStore = useTaxonomyStore()
+
+  const emits = defineEmits(['updateTree', 'toOrganismList'])
   const router = useRouter()
   var level = ref(0)
   var linkExtension = null
@@ -86,6 +102,8 @@
     // node:String,
     data: Object,
   })
+  const showModal = ref(false)
+  const taxName = ref(props.data.name)
   const width = ref(954)
   const tooltip = ref(null)
   const showDetails = ref(false)
@@ -103,6 +121,22 @@
     createD3Tree(props.data)
   })
 
+  function goBack(bc) {
+    const index = taxonomyStore.breadcrumbs.findIndex((b) => b.taxid === bc.taxid)
+    if (index !== -1) {
+      taxonomyStore.breadcrumbs = taxonomyStore.breadcrumbs.slice(0, index + 1)
+      emits('updateTree', bc.taxid)
+    }
+  }
+  function updateTree(node) {
+    const index = taxonomyStore.breadcrumbs.findIndex((b) => b.taxid === node.taxid)
+    if (index === -1) {
+      taxonomyStore.breadcrumbs.push(node)
+    } else {
+      taxonomyStore.breadcrumbs = taxonomyStore.breadcrumbs.slice(0, index + 1)
+    }
+    emits('updateTree', node.taxid)
+  }
   function downloadSVGImage() {
     const svg = tree.value.cloneNode(true) // clone your original svg
     const g = svg.querySelector('g') // select the parent g
@@ -135,21 +169,29 @@
   }
 
   function createD3Tree(data) {
-    console.log(data)
     const root = d3.hierarchy(data, (d) => d.children)
     root
       .sum((d) => (d.children ? 0 : 1))
       .sort((a, b) => a.value - b.value || d3.ascending(a.data.length, b.data.length))
-    const doms = root.descendants().sort((a, b) => b.height - a.height)
-    var countList = doms.reduce(function (p, c) {
-      p[c.height] = (p[c.height] || 0) + 1
-      return p
-    }, {})
-    var result = doms.filter(function (obj) {
-      return countList[obj.height] > 1
-    })
-    legendDomains = [doms[0]].concat(result.slice(0, 4)).map((d) => d.data)
-    domains = legendDomains.map((d) => d.name)
+
+    const sortedDomains = root
+      .descendants()
+      .filter((n) => n.children)
+      .sort((a, b) => {
+        if (a.descendants() === b.descendants()) {
+          return a.leaves > b.leaves ? -1 : 1
+        } else if (a.leaves === b.leaves) {
+          return a.height > b.height ? -1 : 1
+        } else {
+          return a.descendants().length > b.descendants().length ? -1 : 1
+        }
+      })
+
+    // .sort((a, b) => b.children.length+b.height - a.children.length+a.height)
+    const slicedDomains = sortedDomains.length > 6 ? sortedDomains.slice(0, 6) : sortedDomains
+    legendDomains.push(...slicedDomains.map((d) => d.data))
+
+    domains = [...legendDomains.map((d) => d.name)]
     var cluster = radialCluster()
     cluster(root)
     setRadius(root, (root.data.length = 0), innerRadius.value / maxLength(root))
@@ -157,8 +199,8 @@
     const svg = d3
       .select(tree.value)
       .attr('viewBox', [-outerRadius.value, -outerRadius.value, width.value, width.value])
-      .attr('font-family', 'sans-serif')
-      .attr('font-size', 10)
+      .attr('font-family', 'inherit')
+    // .attr('font-size', 12)
 
     svg.append('style').text(`
         .link--active {
@@ -339,19 +381,6 @@
       .on('mouseout', mouseovered(false))
   }
 
-  //return object with level and number of nodes at each level
-  function leveledTree(node, leveledTreeObj) {
-    if (leveledTreeObj[node.height]) {
-      leveledTreeObj[node.height]++
-    } else {
-      leveledTreeObj[node.height] = 1
-    }
-    if (node.children) {
-      node.children.forEach((n) => leveledTree(n, leveledTreeObj))
-    }
-    return leveledTreeObj
-  }
-
   function toPageDetails(route) {
     router.push(route)
   }
@@ -361,7 +390,7 @@
   .leaves-class,
   .legend-text {
     cursor: pointer;
-    font-size: 0.8rem;
+    /* font-size: 0.8rem; */
     /* font-size: inherit; */
   }
   .tree-svg {

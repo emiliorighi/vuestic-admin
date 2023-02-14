@@ -29,7 +29,7 @@ export default {
       name: 'taxons',
       displayName: 'menu.taxons',
       meta: {
-        icon: 'pets',
+        icon: 'tenancy',
       },
     },
     {

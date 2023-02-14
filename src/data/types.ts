@@ -75,6 +75,13 @@ export type BreadCrumb = {
   path: string
 }
 
+export type TreeNode = {
+  name: string
+  rank: string
+  taxid: string
+  leaves: number
+}
+
 export type Contributor = {
   contributions?: number
   name: string

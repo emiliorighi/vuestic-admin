@@ -26,11 +26,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../pages/taxons/Taxon.vue'),
   },
   {
-    name: 'organisms',
-    path: '/organisms',
-    component: () => import('../pages/organisms/OrganismPage.vue'),
-  },
-  {
     name: 'assemblies',
     path: '/assemblies',
     component: () => import('../pages/assemblies/AssemblyPage.vue'),
@@ -132,6 +127,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../pages/maps/Cesium.vue'),
   },
   {
+    name: 'cesium-node',
+    path: '/cesium-node',
+    component: () => import('../pages/maps/CesiumNode.vue'),
+  },
+  {
     name: 'insdc-form',
     path: '/insdc-form',
     component: () => import('../pages/forms/INSDCForm.vue'),
@@ -140,6 +140,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'organism-form',
     path: '/organism-form',
     component: () => import('../pages/forms/OrganismForm.vue'),
+  },
+  {
+    name: 'taxonomy',
+    path: '/taxonomy',
+    component: () => import('../pages/taxons/Taxonomy.vue'),
   },
   // {
   //   path: "/admin",

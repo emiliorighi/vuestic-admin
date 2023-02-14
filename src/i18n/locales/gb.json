@@ -294,7 +294,7 @@
     "auth": "Auth",
 
     "bioprojects": "BioProjects",
-    "taxons": "Taxons",
+    "taxons": "Taxonomy",
     "assemblies": "Assemblies",
     "biosamples": "BioSamples",
     "local_samples": "Local Samples",
