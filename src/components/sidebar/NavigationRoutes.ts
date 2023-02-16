@@ -64,5 +64,46 @@ export default {
         name: 'biosamples',
       },
     },
+    {
+      name: 'forms',
+      displayName: 'menu.forms',
+      meta: {
+        icon: 'vuestic-iconset-forms',
+      },
+      disabled: true,
+      children: [
+        {
+          name: 'insdc-forms',
+          displayName: 'menu.insdcForms',
+          meta: {},
+        },
+        {
+          name: 'organism-form',
+          displayName: 'menu.organismForm',
+          meta: {},
+        },
+        // {
+        //   name: 'local-samples-form',
+        //   displayName: 'menu.localSamplesForm',
+        //   meta: {
+        //     name: 'forms',
+        //   },
+        // },
+        // {
+        //   name: 'genome-browser-form',
+        //   displayName: 'menu.genomeBrowserForm',
+        //   meta: {
+        //     name: 'forms',
+        //   },
+        // },
+        // {
+        //   name: 'annotation-form',
+        //   displayName: 'menu.annotationForm',
+        //   meta: {
+        //     name: 'forms',
+        //   },
+        // }
+      ],
+    },
   ] as INavigationRoute[],
 }

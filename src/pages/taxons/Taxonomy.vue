@@ -1,6 +1,6 @@
 <template>
   <va-accordion v-model="value">
-    <va-collapse v-for="(rank, index) in ranks" :key="index" :color="colors[index]" flat>
+    <va-collapse v-for="(rank, index) in ranks" :key="index" text-color="textPrimary" color="#f6f6f6" flat>
       <template #header-content>
         <div class="row align-center">
           <div class="flex va-h6">

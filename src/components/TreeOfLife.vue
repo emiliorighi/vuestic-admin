@@ -62,25 +62,31 @@
       <svg ref="tree" class="tree-svg"></svg>
     </va-card-content>
   </va-card>
-  <va-modal v-model="showModal">
-    <va-timeline vertical>
-      <va-timeline-item
-        v-for="(bc, index) in taxonomyStore.breadcrumbs"
-        :key="index"
-        :active="bc.name === taxName ? true : undefined"
-      >
-        <template #before>
-          <span class="title title--danger va-timeline-item__text"> {{ bc.name }} ({{ bc.rank }}) </span>
-        </template>
-        <template #after>
-          <va-chip :disabled="bc.name === taxName" class="mb-0" @click="goBack(bc)"> Go </va-chip>
-          <!-- <va-card stripe class="mb-0">
-                  <va-card-content>
-                    <p></p>{{ bc.taxid }}</va-card-content>
-                </va-card> -->
-        </template>
-      </va-timeline-item>
-    </va-timeline>
+  <va-modal v-model="showModal" size="large">
+    <div style="width: 300px">
+      <va-timeline vertical>
+        <va-timeline-item
+          v-for="(bc, index) in taxonomyStore.breadcrumbs"
+          :key="index"
+          :active="bc.name === taxName ? true : undefined"
+        >
+          <template #before>
+            <div class="row title title--danger va-timeline-item__text">
+              <div class="flex">
+                <span class=""> {{ bc.name }} ({{ bc.rank }}) </span>
+              </div>
+            </div>
+          </template>
+          <template #after>
+            <va-chip :disabled="bc.name === taxName" class="mb-0" @click="goBack(bc)"> Go </va-chip>
+            <!-- <va-card stripe class="mb-0">
+                    <va-card-content>
+                      <p></p>{{ bc.taxid }}</va-card-content>
+                  </va-card> -->
+          </template>
+        </va-timeline-item>
+      </va-timeline>
+    </div>
   </va-modal>
 </template>
 <script setup lang="ts">
@@ -94,7 +100,6 @@
 
   const emits = defineEmits(['updateTree', 'toOrganismList'])
   const router = useRouter()
-  var level = ref(0)
   var linkExtension = null
   var link = null
   var legendDomains = reactive([])
@@ -109,9 +114,7 @@
   const showDetails = ref(false)
   const outerRadius = computed(() => width.value / 2)
   const innerRadius = computed(() => outerRadius.value - 170)
-  const legendPosition = computed(() => -outerRadius.value)
   const downloadType = ref('svg')
-  const stack = reactive([])
   var domains = reactive([])
   const tree = ref(null)
   const selectedNode = ref({})

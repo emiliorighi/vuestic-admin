@@ -11,8 +11,17 @@ const base = axios.create({
 })
 const submitInstance = axios.create({
   baseURL: baseURL,
+  withCredentials: true,
 })
 
+submitInstance.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    console.log(error)
+  },
+)
 const ncbi = axios.create({
   baseURL: 'https://api.ncbi.nlm.nih.gov/datasets/v1',
   headers: {

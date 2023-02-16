@@ -132,15 +132,23 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../pages/maps/CesiumNode.vue'),
   },
   {
-    name: 'insdc-form',
-    path: '/insdc-form',
-    component: () => import('../pages/forms/INSDCForm.vue'),
+    name: 'forms',
+    path: '/forms',
+    component: () => import('../layouts/RouterBypass.vue'),
+    children: [
+      {
+        name: 'insdc-forms',
+        path: 'insdc-form',
+        component: () => import('../pages/forms/INSDCForm.vue'),
+      },
+      {
+        name: 'organism-form',
+        path: 'organism-form',
+        component: () => import('../pages/forms/OrganismForm.vue'),
+      },
+    ],
   },
-  {
-    name: 'organism-form',
-    path: '/organism-form',
-    component: () => import('../pages/forms/OrganismForm.vue'),
-  },
+
   {
     name: 'taxonomy',
     path: '/taxonomy',

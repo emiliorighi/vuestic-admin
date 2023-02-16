@@ -286,6 +286,7 @@
   "language": {
     "brazilian_portuguese": "Português",
     "english": "English",
+    "catalan": "Catalan",
     "spanish": "Spanish",
     "simplified_chinese": "Simplified Chinese",
     "persian": "Persian"
@@ -300,7 +301,11 @@
     "local_samples": "Local Samples",
     "reads": "Reads",
     "organisms": "Organisms",
-
+    "insdcForms": "Import from INSDC",
+    "organismForm": "Create Organism",
+    "localSamplesForm": "Upload Spreadsheet",
+    "genomeBrowserForm":"Add Genome Browser Tracks",
+    "annotationForm":"Add Annotation Links",
     "rating": "Rating",
     "buttons": "Buttons",
     "charts": "Charts",

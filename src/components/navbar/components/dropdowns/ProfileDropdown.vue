@@ -8,10 +8,9 @@
         </span>
       </template>
       <va-dropdown-content class="profile-dropdown__content">
-        <va-list-item v-for="option in options" :key="option.name" class="pa-2">
-          <router-link :to="{ name: option.redirectTo }" class="profile-dropdown__item">
-            {{ t(`user.${option.name}`) }}
-          </router-link>
+        <va-list-item class="pa-2">
+          <va-chip v-if="globalStore.isAuthenticated" flat @click="logout()"> Logout </va-chip>
+          <va-chip v-else flat @click="showLoginModal()"> Login </va-chip>
         </va-list-item>
       </va-dropdown-content>
     </va-dropdown>
@@ -22,7 +21,9 @@
   import { ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useColors } from 'vuestic-ui'
+  import { useGlobalStore } from '../../../../stores/global-store'
 
+  const globalStore = useGlobalStore()
   const { t } = useI18n()
   const { colors } = useColors()
 
@@ -45,6 +46,14 @@
   )
 
   const isShown = ref(false)
+
+  function showLoginModal() {
+    globalStore.showLoginModal = true
+    return
+  }
+  function logout() {
+    console.log('')
+  }
 </script>
 
 <style lang="scss" scoped>

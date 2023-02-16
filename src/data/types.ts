@@ -82,6 +82,17 @@ export type TreeNode = {
   leaves: number
 }
 
+export type Publication = {
+  source: 'DOI' | 'PubMed ID' | 'PubMed CentralID' | ''
+  id: string
+}
+
+export type CommonName = {
+  value: string
+  locality: string
+  lang: string
+}
+
 export type Contributor = {
   contributions?: number
   name: string

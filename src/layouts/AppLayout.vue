@@ -23,6 +23,7 @@
         </div>
       </div>
     </div>
+    <Login />
   </div>
 </template>
 
@@ -30,13 +31,13 @@
   import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { onBeforeRouteUpdate } from 'vue-router'
-
   import { useGlobalStore } from '../stores/global-store'
-
+  import Login from '../components/modals/Login.vue'
   import Navbar from '../components/navbar/Navbar.vue'
   import Sidebar from '../components/sidebar/Sidebar.vue'
 
   const GlobalStore = useGlobalStore()
+  const inputType = ref('password')
 
   const mobileBreakPointPX = 640
   const tabletBreakPointPX = 768
@@ -76,6 +77,9 @@
 
   onResize()
 
+  function handleSubmit() {
+    GlobalStore.login()
+  }
   const isFullScreenSidebar = computed(() => isTablet.value && !isSidebarMinimized.value)
 
   const onCloseSidebarButtonClick = () => {

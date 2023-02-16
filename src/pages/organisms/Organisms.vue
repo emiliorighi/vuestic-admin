@@ -175,7 +175,7 @@
 
   async function reset() {
     offset.value = 1
-    organismStore.resetForm()
+    organismStore.resetSearchForm()
     organismStore.resetPagination()
     getOrganisms(await OrganismService.getOrganisms({ ...organismStore.pagination }))
   }

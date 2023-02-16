@@ -1,13 +1,20 @@
 import { defineStore } from 'pinia'
+import AuthService from '../services/clients/AuthService'
 
 export const useGlobalStore = defineStore('global', {
   state: () => {
     return {
       isSidebarMinimized: false,
-      userName: 'Vasili S',
+      userName: '',
+      userPassword: '',
+      userRole: '',
+      isAuthenticated: false,
+      showLoginModal: false,
+      showToast: false,
+      error: false,
+      message: '',
     }
   },
-
   actions: {
     toggleSidebar() {
       this.isSidebarMinimized = !this.isSidebarMinimized
@@ -16,5 +23,36 @@ export const useGlobalStore = defineStore('global', {
     changeUserName(userName: string) {
       this.userName = userName
     },
+    async login() {
+      console.log('hello')
+      try {
+        const response = await AuthService.login({ name: this.userName, password: this.userPassword })
+        if (response.status === 200) this.isAuthenticated = true
+        // this.setLocalStorage()
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async logout() {
+      // try {
+      //     const response = await SubmissionService.logout()
+      //     localStorage.clear()
+      //     this.user.name = ''
+      //     this.user.password = ''
+      //     this.user.role = ''
+      //     this.isAuthenticated = ''
+      //     this.setLocalStorage()
+      //     this.message.text = response.data.msg
+      //     this.message.color = 'success'
+      // }
+      // catch (error) {
+      //     this.message.text = error.response.data.message
+      //     this.message.color = 'danger'
+      // }
+    },
+    // setLocalStorage(){
+    //   localStorage.setItem('userName', this.userName)
+    //   localStorage.setItem('userRole', this.userRole)
+    // }
   },
 })

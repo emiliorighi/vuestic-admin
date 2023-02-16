@@ -6,11 +6,13 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
   import NavigationRoutes from './NavigationRoutes'
   import MenuAccordion from './menu/MenuAccordion.vue'
   import MenuMinimized from './menu/MenuMinimized.vue'
+  import { useGlobalStore } from '../../stores/global-store'
 
+  const GlobalStore = useGlobalStore()
   withDefaults(
     defineProps<{
       width?: string
@@ -28,7 +30,11 @@
     },
   )
 
-  const items = ref(NavigationRoutes.routes)
+  const items = computed(() => {
+    return GlobalStore.isAuthenticated
+      ? NavigationRoutes.routes
+      : NavigationRoutes.routes.filter((r) => r.name !== 'forms')
+  })
 </script>
 
 <style lang="scss">
