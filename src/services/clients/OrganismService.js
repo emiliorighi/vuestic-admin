@@ -13,20 +13,16 @@ class OrganismService {
     return base.get(`/organisms/${taxid}`)
   }
 
+  getOrganismLineage(taxid) {
+    return base.get(`/organisms/${taxid}/lineage`)
+  }
+
+  getOrganismBioprojects(taxid) {
+    return base.get(`/organisms/${taxid}/bioprojects`)
+  }
+
   getOrganismRelatedData(taxid, model) {
     return base.get(`/organisms/${taxid}/${model}`)
-  }
-
-  createOrganism(formData) {
-    return base.post('/organisms', formData)
-  }
-
-  updateOrganism(taxid, formData) {
-    return base.put(`/organisms/${taxid}`, formData)
-  }
-
-  deleteOrganism(taxid) {
-    return base.delete(`/organisms/${taxid}`)
   }
 }
 

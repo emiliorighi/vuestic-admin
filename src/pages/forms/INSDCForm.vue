@@ -1,21 +1,29 @@
 <template>
   <va-card class="d-flex">
-    <va-tabs v-model="model" grow>
-      <template #tabs>
-        <va-tab v-for="(m, index) in crudList" :key="index">
-          {{ m.label }}
-        </va-tab>
-      </template>
-    </va-tabs>
+    {{ crudObj }}
     <va-card-content>
       <va-inner-loading :loading="isLoading">
-        <va-input v-model="input" label="accession number">
-          <template #append>
-            <va-button :disabled="input.length <= 3" type="submit" icon="search" @click="getINSDCObject()"
-              >Search</va-button
-            >
-          </template>
-        </va-input>
+        <div class="row">
+          <div class="flex">
+            <va-radio
+              v-for="(m, index) in crudList"
+              :key="index"
+              v-model="model"
+              :disabled="metadata && Object.keys(metadata).length"
+              :label="m.label"
+              :option="m.value"
+            />
+          </div>
+          <div class="flex">
+            <va-input v-model="input" label="accession number">
+              <template #append>
+                <va-button :disabled="input.length <= 3" type="submit" icon="search" @click="getINSDCObject()"
+                  >Search</va-button
+                >
+              </template>
+            </va-input>
+          </div>
+        </div>
       </va-inner-loading>
     </va-card-content>
   </va-card>
@@ -43,9 +51,10 @@
   import NCBIClientService from '../../services/clients/NCBIClientService'
   import { useToast } from 'vuestic-ui'
   import Metadata from '../../components/ui/Metadata.vue'
+
   const { init } = useToast()
 
-  const model = ref(0)
+  const model = ref('biosample')
 
   const input = ref('')
 
@@ -58,7 +67,7 @@
   })
 
   const crudObj = computed(() => {
-    return crudList[model.value]
+    return crudList.find((it) => it.value === model.value)
   })
 
   const metadata = ref()

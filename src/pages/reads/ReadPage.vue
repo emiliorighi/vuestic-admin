@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <p class="va-title">stats</p>
+    <p class="va-title">stats</p>
     <div class="row row-equal">
       <div class="flex lg3 md3 sm12 xs12">
         <Suspense>
@@ -33,7 +33,7 @@
           />
         </Suspense>
       </div>
-    </div> -->
+    </div>
     <div class="row row-equal">
       <div class="flex sm12 xs12">
         <va-breadcrumbs class="va-title" color="primary">

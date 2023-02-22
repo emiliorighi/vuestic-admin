@@ -77,7 +77,7 @@
 
   const offset = ref(1 + biosampleStore.pagination.offset)
 
-  const columns = ['accession', 'scientific_name', 'collection_date', 'gal', 'habitat']
+  const columns = ['accession', 'scientific_name', 'collection_date', 'gal', 'habitat', 'organism_part']
 
   const biosamples = ref([])
   const total = ref(0)

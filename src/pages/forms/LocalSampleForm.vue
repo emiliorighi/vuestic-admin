@@ -1,43 +1,40 @@
 <template>
-  <p class="va-title">{{ `Annotation ${isUpdate ? 'Update' : 'Creation'}` }}</p>
+  <p class="va-title">{{ `Local Sample ${isUpdate ? 'Update' : 'Creation'}` }}</p>
   <va-divider />
   <div v-if="!isUpdate" class="row">
-    <div class="flex lg6 md6 sm12 xs12">
-      <va-inner-loading :loading="isLoading">
+    <va-inner-loading :loading="isLoading">
+      <div class="flex lg6 md6 sm12 xs12">
         <va-input
-          v-model="input"
+          v-model="taxidInput"
           style="padding-bottom: 10px"
-          label="Annotation name"
-          placeholder="Insert a valid annotation name"
+          label="Taxonomic identifier (NCBI)"
+          placeholder="Insert a valid Taxonomic identifier"
         >
           <template #append>
-            <va-button :disabled="input.length < 1" type="submit" icon="search" @click="getAnnotation()"
-              >Validate Annotation name</va-button
-            >
+            <va-button :disabled="taxidInput.length < 1" icon="search" @click="getTaxon()">Validate TAXID</va-button>
           </template>
         </va-input>
-      </va-inner-loading>
-    </div>
+      </div>
+      <div class="flex lg6 md6 sm12 xs12">
+        <va-input v-model="input" style="padding-bottom: 10px" label="Local Id" placeholder="Insert a valid identifier">
+          <template #append>
+            <va-button :disabled="input.length < 1" icon="search" @click="getLocalSample()">Validate ID</va-button>
+          </template>
+        </va-input>
+      </div>
+    </va-inner-loading>
   </div>
   <Transition>
-    <va-card v-if="annotationStore.annotationForm.name" stripe stripe-color="success" class="d-flex">
+    <va-card
+      v-if="localSampleStore.localSampleForm.local_id && localSampleStore.localSampleForm.taxid"
+      stripe
+      stripe-color="success"
+      class="d-flex"
+    >
       <va-form tag="form" @submit.prevent="handleSubmit">
         <va-card-content>
-          <h2 class="va-h5">{{ annotationStore.annotationForm.name }}</h2>
-          <p>assembly accession: {{ annotationStore.annotationForm.assembly_name }}</p>
-        </va-card-content>
-        <va-divider>Links</va-divider>
-        <va-card-content>
-          <va-input
-            v-model="annotationStore.annotationForm.gff_gz_location"
-            label="gzipped gff3 url"
-            :messages="['URL of the gzipped gff file']"
-          />
-          <va-input
-            v-model="annotationStore.annotationForm.tab_index_location"
-            label="tabindexed gff3 url"
-            :messages="['URL of the tabindexed gzipped gff file']"
-          />
+          <h2 class="va-h5">{{ localSampleStore.localSampleForm.local_id }}</h2>
+          <p>{{ localSampleStore.localSampleForm.scientific_name }}</p>
         </va-card-content>
         <va-divider>Attributes</va-divider>
         <va-card-content>
@@ -73,29 +70,29 @@
 <script setup lang="ts">
   import { computed, onMounted, reactive, ref } from 'vue'
   import { useToast } from 'vuestic-ui'
+  import AuthService from '../../services/clients/AuthService'
   import { useGlobalStore } from '../../stores/global-store'
-  import { useAnnotationStore } from '../../stores/annotation-store'
-  import AnnotationService from '../../services/clients/AnnotationService'
+  import LocalSampleService from '../../services/clients/LocalSampleService'
+  import { useLocalSampleStore } from '../../stores/local-sample-store'
+  import ENAClientService from '../../services/clients/ENAClientService'
 
-  const annotationStore = useAnnotationStore()
-  const globalStore = useGlobalStore()
-
-  const props = defineProps({
-    name: String,
-    assemblyAccession: String,
-    assemblyName: String,
-    taxid: String,
-  })
-
-  const isUpdate = computed(() => {
-    return props.name
-  })
-
-  const isLoading = ref(false)
+  const taxidInput = ref('')
 
   const retries = ref(0)
 
-  const previewAvatar = ref(false)
+  const localSampleStore = useLocalSampleStore()
+
+  const globalStore = useGlobalStore()
+
+  const props = defineProps({
+    id: String,
+  })
+
+  const isUpdate = computed(() => {
+    return props.id
+  })
+
+  const isLoading = ref(false)
 
   type Metatada = {
     key: string
@@ -110,23 +107,21 @@
   const message = ref('')
 
   onMounted(async () => {
-    annotationStore.annotationForm.assembly_accession = props.assemblyAccession
-    annotationStore.annotationForm.assembly_name = props.assemblyName
-    annotationStore.annotationForm.taxid = props.taxid
+    localSampleStore.localSampleForm.local_id = props.id
     if (!isUpdate.value) return
 
-    const { data } = await AnnotationService.getAnnotation(props.name)
+    const { data } = await LocalSampleService.getLocalSample(props.id)
 
     Object.keys(data)
-      .filter((k) => Object.keys(annotationStore.annotationForm).includes(k))
+      .filter((k) => Object.keys(localSampleStore.localSampleForm).includes(k))
       .forEach((k) => {
-        annotationStore.annotationForm[k] = data[k]
+        localSampleStore.localSampleForm[k] = data[k]
       })
     //parse metadata
-    const parsedMetadata = Object.keys(annotationStore.annotationForm.metadata).map((k) => {
+    const parsedMetadata = Object.keys(localSampleStore.localSampleForm.metadata).map((k) => {
       return {
         key: k,
-        value: annotationStore.annotationForm.metadata[k],
+        value: localSampleStore.localSampleForm.metadata[k],
       }
     })
     if (parsedMetadata.length) {
@@ -134,12 +129,12 @@
     }
   })
 
-  async function getAnnotation() {
+  async function getLocalSample() {
     isLoading.value = true
     try {
-      const { status } = await AnnotationService.getAnnotation(input.value)
+      const { status } = await LocalSampleService.getLocalSample(input.value)
       if (status === 200) {
-        message.value = `Annotation with name: ${input.value} already exists`
+        message.value = `Local sample with name: ${input.value} already exists`
         init({ message: message.value, color: 'danger' })
         isLoading.value = false
         return
@@ -152,8 +147,28 @@
         return
       }
     }
-    annotationStore.annotationForm.name = input.value
+    localSampleStore.localSampleForm.local_id = input.value
     isLoading.value = false
+  }
+
+  async function getTaxon() {
+    isLoading.value = true
+    try {
+      if (retries.value === 3) {
+        retries.value = 0
+      }
+      const { data } = await ENAClientService.getTaxon(taxidInput.value)
+      if (data && data.length) {
+        const { tax_id, description } = data[0]
+        isLoading.value = false
+        localSampleStore.localSampleForm.taxid = tax_id
+        localSampleStore.localSampleForm.scientific_name = description
+      }
+    } catch (error) {
+      message.value = error.response.data.message
+      init({ message: message.value, color: 'danger' })
+      isLoading.value = false
+    }
   }
   async function handleSubmit() {
     if (!globalStore.isAuthenticated) {
@@ -164,14 +179,14 @@
     metadataList.forEach((m) => {
       metadata[m.key] = m.value
     })
-    annotationStore.annotationForm.metadata = { ...metadata }
+    localSampleStore.localSampleForm.metadata = { ...metadata }
 
     //   if(isUpdate.value){
-    //     const {data} = await AuthService.updateOrganism(props.taxid, annotationStore.organismForm)
+    //     const {data} = await AuthService.updateOrganism(props.taxid, localSampleStore.organismForm)
     //     init({ message: data, color: 'success' })
     //     return
     //   }
-    //     const {data} = await AuthService.createOrganism(annotationStore.organismForm)
+    //     const {data} = await AuthService.createOrganism(localSampleStore.organismForm)
     //     init({ message: data, color: 'success' })
     //     return
   }

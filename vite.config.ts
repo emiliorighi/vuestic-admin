@@ -4,9 +4,6 @@ import { fileURLToPath } from 'url'
 import VueI18nPlugin from '@intlify/vite-plugin-vue-i18n'
 import { defineConfig, loadEnv } from 'vite'
 import cesium from 'vite-plugin-cesium'
-import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
-import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
-import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 import pluginRewriteAll from 'vite-plugin-rewrite-all'
 
 export default ({ mode }) => {

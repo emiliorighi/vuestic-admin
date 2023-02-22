@@ -27,20 +27,23 @@
     </div>
     <Transition>
       <div v-if="showTree" class="flex lg6 md6 sm12 xs12">
-        <TreeOfLife :data="treeData" @update-tree="getTreeData" />
+        <TreeOfLife :data="treeData" @to-organism-list="toOrganismList" @update-tree="getTreeData" />
       </div>
     </Transition>
   </div>
 </template>
 <script setup lang="ts">
   import { onMounted, ref } from 'vue'
-  import ContributorList from '../../components/stats/ContributorList.vue'
   import TaxonService from '../../services/clients/TaxonService'
-  import OrganismService from '../../services/clients/OrganismService'
   import TreeOfLife from '../../components/TreeOfLife.vue'
   import { TaxonNode, Contributor } from '../../data/types'
-  import VaChart from '../../components/va-charts/VaChart.vue'
   import Taxonomy from './Taxonomy.vue'
+  import { useOrganismStore } from '../../stores/organism-store'
+  import { useRouter } from 'vue-router'
+  import route from '../admin/ui/route'
+
+  const organismStore = useOrganismStore()
+  const router = useRouter()
 
   const ranks = ['class', 'phylum', 'order', 'family']
   const selectedRank = ref('class')
@@ -65,6 +68,11 @@
     return data
   }
 
+  function toOrganismList(taxid: string) {
+    organismStore.resetSearchForm()
+    organismStore.searchForm.parent_taxid = taxid
+    router.push({ name: 'organism-list' })
+  }
   // async function generateChartData() {
   //   const { data } = await TaxonService.getTaxons({ rank: 'kingdom' })
   //   const sortedData = await data.data.sort((a: TaxonNode, b: TaxonNode) => b.leaves - a.leaves)

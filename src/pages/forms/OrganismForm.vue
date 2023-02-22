@@ -1,9 +1,9 @@
 <template>
-  <p class="va-title">organism creation</p>
+  <p class="va-title">{{ `Organism ${isUpdate ? 'Update' : 'Creation'}` }}</p>
   <va-divider />
-  <va-inner-loading :loading="isLoading">
-    <div class="row">
-      <div class="flex lg6 md6 sm12 xs12">
+  <div v-if="!isUpdate" class="row">
+    <div class="flex lg6 md6 sm12 xs12">
+      <va-inner-loading :loading="isLoading">
         <va-input
           v-model="input"
           style="padding-bottom: 10px"
@@ -16,9 +16,9 @@
             >
           </template>
         </va-input>
-      </div>
+      </va-inner-loading>
     </div>
-  </va-inner-loading>
+  </div>
   <Transition>
     <va-card v-if="organismStore.organismForm.taxid" stripe stripe-color="success" class="d-flex">
       <va-form tag="form" @submit.prevent="handleSubmit">
@@ -57,6 +57,10 @@
           <va-select
             v-model="organismStore.organismForm.goat_status"
             label="Goat Status"
+            :disabled="
+              organismStore.organismForm.goat_status === 'INSDC Submitted' ||
+              organismStore.organismForm.goat_status === 'Publication Available'
+            "
             :options="goatStatusOptions"
             class="mt-3"
           >
@@ -142,20 +146,32 @@
         </va-card-content>
         <va-divider />
         <va-card-actions align="between">
-          <va-button type="reset" color="danger">Reset Form</va-button>
-          <va-button type="submit">Submit Organism</va-button>
+          <va-button type="reset" color="danger">Reset</va-button>
+          <va-button type="submit">Submit</va-button>
         </va-card-actions>
       </va-form>
     </va-card>
   </Transition>
 </template>
 <script setup lang="ts">
-  import { computed, reactive, ref } from 'vue'
+  import { computed, onMounted, reactive, ref } from 'vue'
   import ENAClientService from '../../services/clients/ENAClientService'
   import OrganismService from '../../services/clients/OrganismService'
   import { useToast } from 'vuestic-ui'
   import { useOrganismStore } from '../../stores/organism-store'
   import { CommonName, Publication } from '../../data/types'
+  import AuthService from '../../services/clients/AuthService'
+  import { useGlobalStore } from '../../stores/global-store'
+
+  const globalStore = useGlobalStore()
+
+  const props = defineProps({
+    taxid: String,
+  })
+
+  const isUpdate = computed(() => {
+    return props.taxid
+  })
 
   const isLoading = ref(false)
 
@@ -165,16 +181,12 @@
 
   const previewAvatar = ref(false)
 
-  const initMetadata = {
-    key: '',
-    value: '',
+  type Metatada = {
+    key: string
+    value: string
   }
-  const initVernacularName: CommonName = {
-    value: '',
-    lang: '',
-    locality: '',
-  }
-  const vernacularNames = reactive([{ ...initVernacularName }])
+
+  const vernacularNames = reactive<CommonName[]>([])
 
   const publicationMessages = [
     'DOI: enter the complete string, e.g., 10.1093/nar/gks1195',
@@ -182,34 +194,73 @@
     'PubMed CentralID (PMCID): include the PMC prefix, e.g., PMC3531190',
   ]
 
-  const metadataList = reactive([{ ...initMetadata }])
-  const goatStatusOptions = [
-    'Sample Collected',
-    'Sample Acquired',
-    'Data Generation',
-    'In Assembly',
-    'INSDC Submitted',
-    'Publication Available',
-  ]
+  const metadataList = reactive<Metatada[]>([])
+
+  const goatStatusOptions = ref([
+    { value: 'Sample Collected', disabled: false },
+    { value: 'Sample Acquired', disabled: false },
+    { value: 'Data Generation', disabled: false },
+    { value: 'In Assembly', disabled: false },
+  ])
   const targetListStatusOptions = ['long_list', 'family_representative', 'other_priority']
-  const initImage = {
-    value: '',
-  }
-  const images = reactive([{ ...initImage }])
+
+  const images = reactive<Record<string, string>[]>([])
   const { init } = useToast()
 
-  const initPublication: Publication = {
-    source: '',
-    id: '',
-  }
-  const publications = reactive([{ ...initPublication }])
+  const publications = reactive<Publication[]>([])
 
   const input = ref('')
 
   const message = ref('')
 
+  const validPublications = computed(() => {
+    return publications.filter((pub) => pub.id)
+  })
   const validImages = computed(() => {
     return images.map((v) => v.value).filter((url) => url)
+  })
+  const validNames = computed(() => {
+    return vernacularNames.filter((n) => n.value)
+  })
+  onMounted(async () => {
+    if (!isUpdate.value) return
+
+    const { data } = await OrganismService.getOrganism(props.taxid)
+
+    Object.keys(data)
+      .filter((k) => Object.keys(organismStore.organismForm).includes(k))
+      .forEach((k) => {
+        organismStore.organismForm[k] = data[k]
+      })
+    //parse images
+    const parsedImages = organismStore.organismForm.image_urls.map((url) => {
+      return {
+        value: url,
+      }
+    })
+    if (parsedImages.length) {
+      images.push(...parsedImages)
+    }
+    //parse metadata
+    const parsedMetadata = Object.keys(organismStore.organismForm.metadata).map((k) => {
+      return {
+        key: k,
+        value: organismStore.organismForm.metadata[k],
+      }
+    })
+    if (parsedMetadata.length) {
+      metadataList.push(...parsedMetadata)
+    }
+    //parse publications
+    const parsedPublications = organismStore.organismForm.publications
+    if (parsedPublications.length) {
+      publications.push(...parsedPublications)
+    }
+    //parse local names
+    const parsedNames = organismStore.organismForm.common_names
+    if (parsedNames.length) {
+      vernacularNames.push(...parsedNames)
+    }
   })
 
   async function getTaxon() {
@@ -246,9 +297,30 @@
       isLoading.value = false
     }
   }
-  function handleSubmit() {
-    console.log('')
+  async function handleSubmit() {
+    if (!globalStore.isAuthenticated) {
+      init({ message: 'You must authenticate first', color: 'danger' })
+    }
+    //parse form data
+    organismStore.organismForm.publications = [...validPublications.value]
+    organismStore.organismForm.image_urls = [...validImages.value]
+    let metadata = {}
+    metadataList.forEach((m) => {
+      metadata[m.key] = m.value
+    })
+    organismStore.organismForm.metadata = { ...metadata }
+    organismStore.organismForm.common_names = [...validNames.value]
+
+    if (isUpdate.value) {
+      const { data } = await AuthService.updateOrganism(props.taxid, organismStore.organismForm)
+      init({ message: data, color: 'success' })
+      return
+    }
+    const { data } = await AuthService.createOrganism(organismStore.organismForm)
+    init({ message: data, color: 'success' })
+    return
   }
+
   function removeAvatar() {
     ;(organismStore.organismForm.image = null), (previewAvatar.value = false)
   }

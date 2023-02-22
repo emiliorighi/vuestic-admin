@@ -29,7 +29,8 @@
 
   async function handleSubmit() {
     try {
-      const { data } = await AuthService.login({ name: GlobalStore.userName, password: GlobalStore.userPassword })
+      const { data } = await await AuthService.login({ name: GlobalStore.userName, password: GlobalStore.userPassword })
+      console.log(data)
       GlobalStore.isAuthenticated = true
       init({ message: `Welcome ${GlobalStore.userName}`, color: 'success' })
     } catch (error) {

@@ -28,9 +28,11 @@ export const useGlobalStore = defineStore('global', {
       try {
         const response = await AuthService.login({ name: this.userName, password: this.userPassword })
         if (response.status === 200) this.isAuthenticated = true
+        console.log(response)
         // this.setLocalStorage()
       } catch (error) {
         console.log(error)
+        this.isAuthenticated = false
       }
     },
     async logout() {

@@ -1,19 +1,9 @@
 <template>
-  <!-- <div v-if="showData">
+  <div v-if="showData">
     <div class="row row-equal justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ organism.scientific_name }}</h1>
-         <div class="row align-center">
-          <div class="flex">
-            <va-button preset="primary" icon="pets">{{ biosample.scientific_name }}</va-button>
-          </div>
-          <div v-for="(dt, index) in relatedData" :key="index" class="flex">
-            <va-button-dropdown v-if="biosample[dt.key].length" round preset="primary">
-              <template #label> <va-icon :name="dt.icon" size="small" /> {{ dt.title }} </template>
-              <List :route="dt.route" :list="biosample[dt.key]" />
-            </va-button-dropdown>
-          </div>
-        </div> 
+        <p v-if="organism.insdc_common_name">{{ organism.insdc_common_name }}</p>
       </div>
       <div class="flex">
         <div class="row row-equal align-center">
@@ -35,84 +25,117 @@
       </div>
     </div>
     <div class="row row-equal">
-      <div v-if="biosample.metadata.GAL" class="flex">
-        <va-card class="mb-4" color="danger">
+      <!-- <div v-if="organism.local_samples.length" class="flex">
+        <va-card class="mb-4" color="warning">
           <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ biosample.metadata.GAL }}</h2>
-            <p style="color: white">Genome Aquisition Lab</p>
+            <h2 class="va-h4 ma-0" style="color: white">{{ organism.local_samples.length }}</h2>
+            <p style="color: white">Local Samples</p>
           </va-card-content>
         </va-card>
       </div>
-      <div v-if="biosample.metadata['organism part']" class="flex">
+      <div v-if="organism.biosamples.length" class="flex">
+        <va-card class="mb-4" color="success">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ organism.biosamples.length }}</h2>
+            <p style="color: white">BioSamples</p>
+          </va-card-content>
+        </va-card>
+      </div>
+      <div v-if="organism.experiments.length" class="flex">
+        <va-card class="mb-4" color="primary">
+          <va-card-content>
+            <h2 class="va-h4 ma-0" style="color: white">{{ organism.experiments.length }}</h2>
+            <p style="color: white">Reads</p>
+          </va-card-content>
+        </va-card>
+      </div>
+      <div v-if="organism.assemblies.length" class="flex">
         <va-card class="mb-4" color="secondary">
           <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ biosample.metadata['organism part'] }}</h2>
-            <p style="color: white">organism part</p>
+            <h2 class="va-h4 ma-0" style="color: white">{{ organism.assemblies.length }}</h2>
+            <p style="color: white">Assemblies</p>
           </va-card-content>
         </va-card>
       </div>
-      <div v-if="biosample.metadata.tissue" class="flex">
-        <va-card class="mb-4" color="warning">
+      <div v-if="organism.annotations.length" class="flex">
+        <va-card class="mb-4" color="secondary">
           <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ biosample.metadata.tissue }}</h2>
-            <p style="color: white">tissue</p>
+            <h2 class="va-h4 ma-0" style="color: white">{{ organism.annotations.length }}</h2>
+            <p style="color: white">Annotations</p>
+          </va-card-content>
+        </va-card>
+      </div> -->
+      <div class="flex lg6 md6 sm12 xs12">
+        <va-card class="mb-4">
+          <va-card-title> taxonomic lineage </va-card-title>
+          <va-card-content>
+            <div class="row">
+              <div v-for="(taxon, index) in taxons" :key="index" class="flex" style="padding: 5px">
+                <strong>{{ taxon.name }}</strong>
+              </div>
+            </div>
           </va-card-content>
         </va-card>
       </div>
-      <div v-if="biosample.metadata.habitat" class="flex">
-        <va-card class="mb-4" color="info">
+      <div v-if="relatedData.length" class="flex lg6 md6 sm12 xs12">
+        <va-card class="mb-4">
+          <va-tabs v-model="selectedData" vertical grow>
+            <template #tabs>
+              <va-tab v-for="model in relatedData" :key="model.key" :name="model.key">
+                {{ model.title }}
+              </va-tab>
+            </template>
+            <va-data-table
+              sticky-header
+              height="150px"
+              grid
+              :items="items"
+              :columns="relatedData[selectedModel].columns"
+            >
+              <template #cell(organism_part)="{ rowData }">
+                {{ rowData.metadata.tissue || rowData.metadata.organism_part || rowData.metadata['organism part'] }}
+              </template>
+              <template #cell(assembly_level)="{ rowData }">
+                {{ rowData.metadata.assembly_level }}
+              </template>
+            </va-data-table>
+          </va-tabs>
+        </va-card>
+      </div>
+    </div>
+
+    <div class="row row-equal"></div>
+    <div class="row row-equal">
+      <div v-if="organism.image_urls.length" class="flex lg4 md4">
+        <va-card>
+          <va-card-title> Images </va-card-title>
+          <va-carousel stateful :items="organism.image_urls"> </va-carousel>
+        </va-card>
+      </div>
+
+      <div v-if="organism.publications.length" class="flex"></div>
+      <div v-if="organism.bioprojects.length" class="flex">
+        <va-card>
+          <va-card-title> bioprojects </va-card-title>
           <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ biosample.metadata.habitat }}</h2>
-            <p style="color: white">habitat</p>
+            <div v-for="(bp, index) in bioprojects" :key="index" style="padding: 0.5rem">
+              <b class="display-6">{{ bp.title }}</b>
+              <p class="text--secondary mb-0">{{ bp.accession }}</p>
+            </div>
           </va-card-content>
         </va-card>
       </div>
-      <div v-if="biosample.metadata['collection date']" class="flex">
-        <va-card class="mb-4" color="success">
+      <div v-if="organism.common_names.length" class="flex"></div>
+      <div v-if="Object.keys(organism.metadata).length" class="flex">
+        <va-card>
+          <va-card-title> metadata </va-card-title>
           <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ biosample.metadata['collection date'] }}</h2>
-            <p style="color: white">collection date</p>
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="biosample.metadata.collection_date" class="flex">
-        <va-card class="mb-4" color="success">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ biosample.metadata.collection_date }}</h2>
-            <p style="color: white">collection date</p>
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="biosample.metadata.geo_loc_name" class="flex">
-        <va-card class="mb-4" color="primary">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ biosample.metadata.geo_loc_name }}</h2>
-            <p style="color: white">Geolocation</p>
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="biosample.metadata['geographic location (country and/or sea)']" class="flex">
-        <va-card class="mb-4" color="warning">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">
-              {{ biosample.metadata['geographic location (country and/or sea)'] }}
-            </h2>
-            <p style="color: white">Country</p>
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="biosample.metadata['geographic location (region and locality)']" class="flex">
-        <va-card class="mb-4" color="primary">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">
-              {{ biosample.metadata['geographic location (region and locality)'] }}
-            </h2>
-            <p style="color: white">Region</p>
+            <Metadata :metadata="organism.metadata" />
           </va-card-content>
         </va-card>
       </div>
     </div>
-    <div class="row row-equal">
+    <!-- <div class="row row-equal">
       <div class="flex lg6 md6 sm12 xs12">
         <va-card-title>metatada</va-card-title>
         <va-card-content style="max-height: 350px; overflow-y: scroll">
@@ -131,54 +154,107 @@
           />
         </va-card>
       </div>
-    </div>
+    </div> -->
   </div>
   <div v-else>
     <h3 class="va-h3">
       {{ error }}
     </h3>
-  </div> -->
-  <div />
+  </div>
 </template>
 <script setup lang="ts">
   import OrganismService from '../../services/clients/OrganismService'
-  import { onMounted, ref } from 'vue'
+  import { onMounted, watch, ref, computed } from 'vue'
   import { AxiosResponse } from 'axios'
-  import Metadata from '../../components/ui/Metadata.vue'
-  import List from '../../components/ui/List.vue'
   import LeafletMap from '../../components/maps/LeafletMap.vue'
+  import Metadata from '../../components/ui/Metadata.vue'
+  import BioSampleService from '../../services/clients/BioSampleService'
 
   const showData = ref(false)
   const error = ref('')
   const props = defineProps({
     taxid: String,
   })
+  const taxons = ref([])
+  const bioprojects = ref([])
+  const assemblies = ref([])
+  const biosamples = ref([])
+  const localSamples = ref([])
+  const reads = ref([])
+  const annotations = ref([])
+  const organism = ref({})
+  const selectedData = ref('')
+  const relatedData = ref([])
+  const items = ref([])
 
-  const relatedData = [
+  watch(selectedData, async () => {
+    if (selectedModel.value !== -1) {
+      const { data } = await OrganismService.getOrganismRelatedData(
+        props.taxid,
+        relatedData.value[selectedModel.value].key,
+      )
+      items.value = data
+    }
+  })
+
+  const models = [
     {
-      title: 'Related BioSamples',
+      title: 'BioSamples',
       icon: 'hubs',
-      key: 'sub_samples',
+      key: 'biosamples',
       route: 'biosample',
+      columns: ['accession', 'organism_part'],
     },
     {
-      title: 'Related Reads',
+      title: 'Local Samples',
+      icon: 'hubs',
+      key: 'local_samples',
+      route: 'local-sample',
+      columns: ['local_id'],
+    },
+    {
+      title: 'Reads',
       icon: 'widgets',
       key: 'experiments',
       route: 'read',
+      columns: ['experiment_accession', 'instrument_platform'],
     },
     {
-      title: 'Related Assemblies',
+      title: 'Assemblies',
       icon: 'library_books',
       key: 'assemblies',
       route: 'assembly',
+      columns: ['accession', 'assembly_name', 'assembly_level'],
+    },
+    {
+      title: 'Annotations',
+      icon: 'library_books',
+      key: 'annotations',
+      route: 'annotation',
+      columns: ['name', 'assembly_name'],
     },
   ]
-  const organism = ref({})
 
+  const selectedModel = computed(() => {
+    return relatedData.value.findIndex((dt) => dt.key === selectedData.value)
+  })
   onMounted(async () => {
     try {
-      getOrganism(await OrganismService.getOrganism(props.taxid))
+      const { data } = await OrganismService.getOrganism(props.taxid)
+      organism.value = { ...data }
+      taxons.value = (await OrganismService.getOrganismLineage(props.taxid)).data
+      const unorderedBioProjects: [] = (await OrganismService.getOrganismBioprojects(props.taxid)).data
+      bioprojects.value = unorderedBioProjects.sort((a, b) => {
+        if (b.children && b.children.includes(a.accession)) {
+          return -1
+        }
+        return 1
+      })
+      relatedData.value = models.filter(
+        (m) => Object.keys(organism.value).includes(m.key) && organism.value[m.key].length,
+      )
+      console.log(relatedData.value)
+      if (relatedData.value.length) selectedData.value = relatedData.value[0].key
       showData.value = true
     } catch (e) {
       error.value = props.taxid + ' ' + e.response.data.message
@@ -191,7 +267,7 @@
   }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
   .chart {
     height: 400px;
   }

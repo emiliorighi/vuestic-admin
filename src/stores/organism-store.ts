@@ -17,7 +17,7 @@ const initOrganismForm = {
   taxid: null,
   scientific_name: null,
   common_names: [] as CommonName[],
-  image: null,
+  image: '',
   image_urls: [] as string[],
   metadata: {} as Record<string, string>,
   publications: [] as Publication[],

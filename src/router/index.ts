@@ -137,14 +137,37 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../layouts/RouterBypass.vue'),
     children: [
       {
+        name: 'crud-table',
+        path: 'admin',
+        component: () => import('../pages/forms/AdminPage.vue'),
+      },
+      {
         name: 'insdc-forms',
         path: 'insdc-form',
         component: () => import('../pages/forms/INSDCForm.vue'),
       },
       {
+        name: 'spreadsheet-upload',
+        path: 'spreadsheet-upload',
+        component: () => import('../pages/forms/SpreadsheetUpload.vue'),
+      },
+      {
         name: 'organism-form',
-        path: 'organism-form',
+        path: 'organism-form/:taxid?',
+        props: true,
         component: () => import('../pages/forms/OrganismForm.vue'),
+      },
+      {
+        name: 'annotation-form',
+        path: 'annotation-form/:assemblyAccession/:id?',
+        props: true,
+        component: () => import('../pages/forms/AnnotationForm.vue'),
+      },
+      {
+        name: 'local-sample-form',
+        path: 'local-sample-form/:id?',
+        props: true,
+        component: () => import('../pages/forms/LocalSampleForm.vue'),
       },
     ],
   },

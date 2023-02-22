@@ -18,6 +18,9 @@
       {{ rowData.metadata.contig_n50 / getContigN50(rowData.metadata.contig_n50)?.value }}
       {{ getContigN50(rowData.metadata.contig_n50)?.name }}
     </template>
+    <template #cell(organism_part)="{ rowData }">
+      {{ rowData.metadata.tissue || rowData.metadata.organism_part || rowData.metadata['organism part'] }}
+    </template>
     <template #cell(size)="{ rowData }">
       {{ rowData.metadata.estimated_size / getContigN50(rowData.metadata.estimated_size)?.value }}
       {{ getContigN50(rowData.metadata.estimated_size)?.name }}
