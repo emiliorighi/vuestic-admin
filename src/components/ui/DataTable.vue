@@ -15,14 +15,14 @@
       <!-- <router-link :to="{name: 'assembly', params: {accession:rowData.accession}}">{{ rowData.assembly_name }}</router-link> -->
     </template>
     <template #cell(contig_n50)="{ rowData }">
-      {{ rowData.metadata.contig_n50 / getContigN50(rowData.metadata.contig_n50)?.value }}
+      {{ (rowData.metadata.contig_n50 / getContigN50(rowData.metadata.contig_n50)?.value).toFixed(2) }}
       {{ getContigN50(rowData.metadata.contig_n50)?.name }}
     </template>
     <template #cell(organism_part)="{ rowData }">
       {{ rowData.metadata.tissue || rowData.metadata.organism_part || rowData.metadata['organism part'] }}
     </template>
     <template #cell(size)="{ rowData }">
-      {{ rowData.metadata.estimated_size / getContigN50(rowData.metadata.estimated_size)?.value }}
+      {{ (rowData.metadata.estimated_size / getContigN50(rowData.metadata.estimated_size)?.value).toFixed(2) }}
       {{ getContigN50(rowData.metadata.estimated_size)?.name }}
     </template>
     <template #cell(submission_date)="{ rowData }">

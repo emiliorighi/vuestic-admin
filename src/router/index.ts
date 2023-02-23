@@ -40,52 +40,32 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    name: 'reads',
     path: '/reads',
+    name: 'reads',
     component: () => import('../pages/reads/ReadPage.vue'),
-    children: [
-      {
-        name: 'read-list',
-        path: '',
-        component: () => import('../pages/reads/Reads.vue'),
-        meta: {
-          name: 'reads',
-        },
-      },
-      {
-        name: 'read',
-        path: ':accession',
-        props: true,
-        component: () => import('../pages/reads/Read.vue'),
-        meta: {
-          name: 'reads',
-        },
-      },
-    ],
   },
   {
-    name: 'biosamples',
+    path: '/reads/:accession',
+    name: 'read',
+    props: true,
+    component: () => import('../pages/reads/ReadDetails.vue'),
+    meta: {
+      name: 'reads',
+    },
+  },
+  {
     path: '/biosamples',
+    name: 'biosamples',
     component: () => import('../pages/biosamples/BioSamplePage.vue'),
-    children: [
-      {
-        name: 'biosample-list',
-        path: '',
-        component: () => import('../pages/biosamples/BioSamples.vue'),
-        meta: {
-          name: 'biosamples',
-        },
-      },
-      {
-        name: 'biosample',
-        path: ':accession',
-        props: true,
-        component: () => import('../pages/biosamples/BioSample.vue'),
-        meta: {
-          name: 'biosamples',
-        },
-      },
-    ],
+  },
+  {
+    path: '/biosamples/:accession',
+    name: 'biosample',
+    props: true,
+    component: () => import('../pages/biosamples/BioSampleDetails.vue'),
+    meta: {
+      name: 'reads',
+    },
   },
   {
     name: 'organisms',

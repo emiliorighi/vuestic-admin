@@ -1,13 +1,23 @@
 <template>
+  <va-breadcrumbs class="va-title" color="primary">
+    <va-breadcrumbs-item :to="{ name: 'biosamples' }" label="biosamples" />
+    <va-breadcrumbs-item
+      v-if="router.currentRoute.value.name === 'biosample'"
+      active
+      :label="router.currentRoute.value.params.accession"
+    />
+  </va-breadcrumbs>
   <div v-if="showData">
     <div class="row row-equal justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ biosample.accession }}</h1>
         <div class="row align-center">
           <div class="flex">
-            <va-button preset="primary" icon="pets">{{ biosample.scientific_name }}</va-button>
+            <va-button :to="{ name: 'organism', params: { taxid: biosample.taxid } }" preset="primary" icon="pets">{{
+              biosample.scientific_name
+            }}</va-button>
           </div>
-          <div v-for="(dt, index) in relatedData" :key="index" class="flex">
+          <div v-for="(dt, index) in validData" :key="index" class="flex">
             <va-button-dropdown v-if="biosample[dt.key].length" round preset="primary">
               <template #label> <va-icon :name="dt.icon" size="small" /> {{ dt.title }} </template>
               <List :route="dt.route" :list="biosample[dt.key]" />
@@ -141,18 +151,32 @@
 </template>
 <script setup lang="ts">
   import BioSampleService from '../../services/clients/BioSampleService'
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref, watch } from 'vue'
   import { AxiosResponse } from 'axios'
   import Metadata from '../../components/ui/Metadata.vue'
   import List from '../../components/ui/List.vue'
   import LeafletMap from '../../components/maps/LeafletMap.vue'
+  import { useRouter } from 'vue-router'
 
+  const router = useRouter()
   const showData = ref(false)
   const error = ref('')
   const props = defineProps({
     accession: String,
   })
 
+  watch(
+    () => props.accession,
+    async (value) => {
+      try {
+        getBioSample(await BioSampleService.getBioSample(props.accession))
+        showData.value = true
+      } catch (e) {
+        error.value = props.accession + ' ' + e.response.data.message
+        showData.value = false
+      }
+    },
+  )
   const relatedData = [
     {
       title: 'Related BioSamples',
@@ -175,9 +199,11 @@
   ]
   const biosample = ref({})
 
+  const validData = ref()
+
   onMounted(async () => {
     try {
-      getRead(await BioSampleService.getBioSample(props.accession))
+      getBioSample(await BioSampleService.getBioSample(props.accession))
       showData.value = true
     } catch (e) {
       error.value = props.accession + ' ' + e.response.data.message
@@ -185,8 +211,11 @@
     }
   })
 
-  function getRead({ data }: AxiosResponse) {
+  function getBioSample({ data }: AxiosResponse) {
     biosample.value = { ...data }
+    validData.value = relatedData.filter(
+      (data) => Object.keys(biosample.value).includes(data.key) && biosample.value[data.key].length,
+    )
   }
 </script>
 

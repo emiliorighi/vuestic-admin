@@ -1,88 +1,21 @@
 <template>
   <div>
-    <p class="va-title">stats</p>
-    <div class="row row-equal">
-      <div class="flex lg4 md4 sm12 xs12">
-        <Suspense>
-          <DateLineChart
-            :label="'BioSamples'"
-            :field="'metadata.collection_date'"
-            :title="'BioSamples collected by month'"
-            :model="'biosamples'"
-            :color="'#2c82e0'"
-          />
-        </Suspense>
-      </div>
-      <div class="flex lg4 md4 sm12 xs12">
-        <Suspense>
-          <ContributorList
-            :field="'metadata.GAL'"
-            :model="'biosamples'"
-            :title="'Genome Aquisition Labs (GAL)'"
-            @list-created="getSubmitters"
-          />
-        </Suspense>
-      </div>
-      <div class="flex lg4 md4 sm12 xs12">
-        <va-card class="px-3">
-          <va-card-title> Habitats </va-card-title>
-          <va-card-content style="max-height: 350px; overflow: scroll">
-            <va-list class="py-4">
-              <template v-for="(habitat, i) in habitats" :key="i">
-                <va-list-item>
-                  <va-list-item-section icon>
-                    <va-icon size="large" color="info" :name="getIcon(habitat.label)" />
-                  </va-list-item-section>
-
-                  <va-list-item-section>
-                    <va-list-item-label>
-                      {{ habitat.label }}
-                    </va-list-item-label>
-                  </va-list-item-section>
-
-                  <va-list-item-section icon>
-                    <va-chip size="small">{{ habitat.value }}</va-chip>
-                  </va-list-item-section>
-                </va-list-item>
-
-                <va-list-separator v-if="i < habitats.length - 1" :key="i" class="my-1" />
-              </template>
-            </va-list>
-          </va-card-content>
-        </va-card>
-      </div>
-    </div>
-    <div class="row row-equal">
-      <div class="flex sm12 xs12">
-        <va-breadcrumbs class="va-title" color="primary">
-          <va-breadcrumbs-item :to="{ name: 'biosample-list', params: { savePosition: true } }" label="biosamples" />
-          <va-breadcrumbs-item
-            v-if="router.currentRoute.value.name === 'biosample'"
-            active
-            :label="router.currentRoute.value.params.accession"
-          />
-        </va-breadcrumbs>
-        <va-divider />
-        <router-view v-slot="{ Component, route }">
-          <Transition name="fade">
-            <component :is="Component" :key="route.path" />
-          </Transition>
-        </router-view>
-      </div>
-    </div>
+    <va-breadcrumbs class="va-title" color="primary">
+      <va-breadcrumbs-item :to="{ name: 'biosamples', params: { savePosition: true } }" label="biosamples" />
+    </va-breadcrumbs>
+    <va-divider />
+    <BioSampleInfoBlock />
+    <BioSampleListBlock />
   </div>
 </template>
 <script setup lang="ts">
   import StatisticsService from '../../services/clients/StatisticsService'
-  import BioSampleService from '../../services/clients/BioSampleService'
   import { onMounted, reactive, ref } from 'vue'
-  import VaChart from '../../components/va-charts/VaChart.vue'
-  import ContributorList from '../../components/stats/ContributorList.vue'
   import { useRouter } from 'vue-router'
   import { Contributor } from '../../data/types'
   import { useBioSampleStore } from '../../stores/biosample-store'
-  import DateLineChart from '../../components/charts/DateLineChart.vue'
-
+  import BioSampleInfoBlock from './BioSampleInfoBlock.vue'
+  import BioSampleListBlock from './BioSampleListBlock.vue'
   const router = useRouter()
   const biosampleStore = useBioSampleStore()
 

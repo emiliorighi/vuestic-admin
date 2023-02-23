@@ -49,7 +49,7 @@ export default {
       },
     },
     {
-      name: 'read-list',
+      name: 'reads',
       displayName: 'menu.reads',
       meta: {
         icon: 'widgets',
@@ -57,7 +57,7 @@ export default {
       },
     },
     {
-      name: 'biosample-list',
+      name: 'biosamples',
       displayName: 'menu.biosamples',
       meta: {
         icon: 'hub',

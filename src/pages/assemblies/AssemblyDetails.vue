@@ -14,7 +14,9 @@
         <h1 class="va-h1">{{ assembly.assembly_name }}</h1>
         <div class="row">
           <div class="flex">
-            <va-button preset="primary" icon="pets">{{ assembly.scientific_name }}</va-button>
+            <va-button preset="primary" icon="pets" :to="{ name: 'organism', params: { taxid: assembly.taxid } }">{{
+              assembly.scientific_name
+            }}</va-button>
           </div>
           <div class="flex">
             <va-button
@@ -103,12 +105,10 @@
         </va-card-content>
       </div>
       <div v-if="showJBrowse" class="flex lg8 md8 sm12 xs12">
-        <va-card>
-          <va-card-title> genome browser </va-card-title>
-          <va-card-content>
-            <Jbrowse2 :assembly="jbrowse.assembly" />
-          </va-card-content>
-        </va-card>
+        <va-card-title> genome browser </va-card-title>
+        <va-card-content>
+          <Jbrowse2 :assembly="jbrowse.assembly" />
+        </va-card-content>
       </div>
     </div>
   </div>

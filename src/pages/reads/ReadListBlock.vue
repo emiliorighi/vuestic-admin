@@ -6,11 +6,11 @@
         <va-form tag="form" @submit.prevent="handleSubmit">
           <va-card-content>
             <div class="row align-center justify-start">
-              <div v-if="assemblyStore.submitters.length" class="flex lg12 md12 sm12 xs12">
+              <div v-if="readStore.submitters.length" class="flex lg12 md12 sm12 xs12">
                 <va-select
-                  v-model="assemblyStore.searchForm.submitter"
-                  :options="assemblyStore.submitters"
-                  label="Assembly Submitters"
+                  v-model="readStore.searchForm.center"
+                  :options="readStore.submitters"
+                  label="Sequencing Centers"
                   value-by="name"
                   text-by="name"
                   searchable
@@ -19,14 +19,14 @@
               <div v-for="(filter, index) in filters" :key="index" class="flex lg12 md12 sm12 xs12">
                 <div v-if="filter.type === 'input'">
                   <va-input
-                    v-model="assemblyStore.searchForm[filter.key]"
+                    v-model="readStore.searchForm[filter.key]"
                     :label="filter.label"
                     :placeholder="filter.placeholder"
                   />
                 </div>
                 <div v-else-if="filter.type === 'select'">
                   <va-select
-                    v-model="assemblyStore.searchForm[filter.key]"
+                    v-model="readStore.searchForm[filter.key]"
                     :label="filter.label"
                     :options="filter.options"
                   />
@@ -59,12 +59,12 @@
       <va-card class="d-flex">
         <va-card-content> Total: {{ total }} </va-card-content>
         <va-card-content>
-          <DataTable :items="assemblies" :columns="columns" />
+          <DataTable :items="reads" :columns="columns" />
           <div class="row align-center justify-center">
             <div class="flex">
               <va-pagination
                 v-model="offset"
-                :page-size="assemblyStore.pagination.limit"
+                :page-size="readStore.pagination.limit"
                 :total="total"
                 :visible-pages="3"
                 buttons-preset="secondary"
@@ -81,11 +81,10 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { useRouter } from 'vue-router'
-  import { useAssemblyStore } from '../../stores/assembly-store'
-  import AssemblyService from '../../services/clients/AssemblyService'
-  import { computed, onMounted, ref, watch } from 'vue'
+  import ReadService from '../../services/clients/ReadService'
+  import { onMounted, ref, watch } from 'vue'
   import { AxiosResponse } from 'axios'
+  import { useReadStore } from '../../stores/read-store'
   import DataTable from '../../components/ui/DataTable.vue'
   import { Filter } from '../../data/types'
 
@@ -94,27 +93,27 @@
     end: null,
   }
   const dateRange = ref({ ...initDateRange })
+  const readStore = useReadStore()
 
   watch(dateRange, () => {
     if (dateRange.value.start)
-      assemblyStore.searchForm.start_date = new Date(dateRange.value.start).toISOString().split('T')[0]
-    if (dateRange.value.end)
-      assemblyStore.searchForm.end_date = new Date(dateRange.value.end).toISOString().split('T')[0]
+      readStore.searchForm.start_date = new Date(dateRange.value.start).toISOString().split('T')[0]
+    if (dateRange.value.end) readStore.searchForm.end_date = new Date(dateRange.value.end).toISOString().split('T')[0]
   })
 
-  const router = useRouter()
-  const assemblyStore = useAssemblyStore()
-
-  const validInputs = computed(() => {
-    return Object.keys(assemblyStore.searchForm)
-      .filter((k) => assemblyStore.searchForm[k])
-      .map((k) => assemblyStore.searchForm[k])
-  })
+  const columns = [
+    'experiment_accession',
+    'experiment_title',
+    'scientific_name',
+    'instrument_platform',
+    'center_name',
+    'first_created',
+  ]
 
   const filters: Filter[] = [
     {
-      label: 'search assembly',
-      placeholder: 'Search by species, taxid or assembly name',
+      label: 'search read',
+      placeholder: 'Search by species, taxid, experiment title or instrument platform',
       key: 'filter',
       type: 'input',
     },
@@ -122,19 +121,13 @@
       label: 'filter by',
       key: 'filter_option',
       type: 'select',
-      options: ['taxid', 'assembly_name', 'scientific_name'],
-    },
-    {
-      label: 'assembly level',
-      key: 'assembly_level',
-      type: 'select',
-      options: ['Chromosome', 'Complete Genome', 'Contig', 'Scaffold'],
+      options: ['taxid', 'experiment_title', 'instrument_platform', 'scientific_name'],
     },
     {
       label: 'sort_column',
       key: 'sort_column',
       type: 'select',
-      options: ['contig_n50', 'size', 'submission_date'],
+      options: ['first_created'],
     },
     {
       label: 'sort_order',
@@ -148,61 +141,37 @@
       type: 'date',
     },
   ]
+  const offset = ref(1 + readStore.pagination.offset)
 
-  const offset = ref(1 + assemblyStore.pagination.offset)
-
-  const columns = [
-    'assembly_name',
-    'scientific_name',
-    'assembly_level',
-    'contig_n50',
-    'submitter',
-    'submission_date',
-    'size',
-    'chromosomes',
-  ]
-  const assemblies = ref([])
+  const reads = ref([])
   const total = ref(0)
 
   onMounted(async () => {
-    getAssemblies(await AssemblyService.getAssemblies({ ...assemblyStore.searchForm, ...assemblyStore.pagination }))
+    getReads(await ReadService.getReads({ ...readStore.searchForm, ...readStore.pagination }))
   })
 
   async function handleSubmit() {
-    assemblyStore.resetPagination()
+    readStore.resetPagination()
     offset.value = 1
-    getAssemblies(await AssemblyService.getAssemblies({ ...assemblyStore.searchForm, ...assemblyStore.pagination }))
+    getReads(await ReadService.getReads({ ...readStore.searchForm, ...readStore.pagination }))
   }
   async function handlePagination(value: number) {
-    assemblyStore.pagination.offset = value - 1
-    getAssemblies(await AssemblyService.getAssemblies({ ...assemblyStore.searchForm, ...assemblyStore.pagination }))
+    readStore.pagination.offset = value - 1
+    getReads(await ReadService.getReads({ ...readStore.searchForm, ...readStore.pagination }))
   }
   function handleDate(payload: Record<string, any>) {
-    assemblyStore.searchForm = { ...assemblyStore.searchForm, ...payload }
+    readStore.searchForm = { ...readStore.searchForm, ...payload }
   }
   async function reset() {
-    const { start, end } = dateRange.value
-    if (start || end) dateRange.value = { ...initDateRange }
     offset.value = 1
-    assemblyStore.resetForm()
-    assemblyStore.resetPagination()
-    getAssemblies(await AssemblyService.getAssemblies({ ...assemblyStore.pagination }))
+    readStore.resetForm()
+    readStore.resetPagination()
+    getReads(await ReadService.getReads({ ...readStore.pagination }))
   }
 
-  function getAssemblies({ data }: AxiosResponse) {
-    assemblies.value = data.data
+  function getReads({ data }: AxiosResponse) {
+    reads.value = data.data
     total.value = data.total
     return data
   }
 </script>
-
-<style lang="scss">
-  .chart {
-    height: 400px;
-  }
-  .row-equal .flex {
-    .va-card {
-      height: 100%;
-    }
-  }
-</style>

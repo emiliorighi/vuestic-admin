@@ -1,11 +1,22 @@
 <template>
+  <va-breadcrumbs class="va-title" color="primary">
+    <va-breadcrumbs-item :to="{ name: 'reads' }" label="reads" />
+    <va-breadcrumbs-item
+      v-if="router.currentRoute.value.name === 'read'"
+      active
+      :label="router.currentRoute.value.params.accession"
+    />
+  </va-breadcrumbs>
+  <va-divider />
   <div v-if="read.metadata">
     <div class="row row-equal justify-space-between">
       <div class="flex">
         <h1 class="va-h1">{{ read.metadata.experiment_title }}</h1>
         <div class="row">
           <div class="flex">
-            <va-button preset="primary" icon="pets">{{ read.metadata.scientific_name }}</va-button>
+            <va-button :to="{ name: 'organism', params: { taxid: read.taxid } }" preset="primary" icon="pets">{{
+              read.metadata.scientific_name
+            }}</va-button>
           </div>
           <div class="flex">
             <va-button
@@ -93,7 +104,9 @@
   import { onMounted, ref } from 'vue'
   import { AxiosResponse } from 'axios'
   import Metadata from '../../components/ui/Metadata.vue'
+  import { useRouter } from 'vue-router'
 
+  const router = useRouter()
   const props = defineProps({
     accession: String,
   })
