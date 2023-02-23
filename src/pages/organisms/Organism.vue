@@ -66,25 +66,23 @@
         </va-card>
       </div> -->
       <div class="flex lg6 md6 sm12 xs12">
-        <va-card class="mb-4">
+        <va-card>
           <va-card-title> taxonomic lineage </va-card-title>
           <va-card-content>
-            <div class="row">
-              <div v-for="(taxon, index) in taxons" :key="index" class="flex" style="padding: 5px">
-                <strong>{{ taxon.name }}</strong>
-              </div>
-            </div>
+            <va-chip v-for="(taxon, index) in taxons" :key="index" flat>{{ taxon.name }}</va-chip>
           </va-card-content>
         </va-card>
       </div>
       <div v-if="relatedData.length" class="flex lg6 md6 sm12 xs12">
         <va-card class="mb-4">
-          <va-tabs v-model="selectedData" vertical grow>
+          <va-tabs v-model="selectedData" grow>
             <template #tabs>
               <va-tab v-for="model in relatedData" :key="model.key" :name="model.key">
                 {{ model.title }}
               </va-tab>
             </template>
+          </va-tabs>
+          <va-card-content>
             <va-data-table
               sticky-header
               height="150px"
@@ -92,6 +90,22 @@
               :items="items"
               :columns="relatedData[selectedModel].columns"
             >
+              <template #cell(accession)="{ rowData }">
+                <va-chip
+                  outline
+                  :to="{ name: relatedData[selectedModel].route, params: { accession: rowData.accession } }"
+                  >{{ rowData.accession }}</va-chip
+                >
+              </template>
+              <template #cell(local_id)="{ rowData }">
+                <va-chip outline>{{ rowData.local_id }}</va-chip>
+              </template>
+              <template #cell(name)="{ rowData }">
+                <va-chip outline>{{ rowData.name }}</va-chip>
+              </template>
+              <template #cell(experiment_accession)="{ rowData }">
+                <va-chip outline>{{ rowData.experiment_accession }}</va-chip>
+              </template>
               <template #cell(organism_part)="{ rowData }">
                 {{ rowData.metadata.tissue || rowData.metadata.organism_part || rowData.metadata['organism part'] }}
               </template>
@@ -99,7 +113,7 @@
                 {{ rowData.metadata.assembly_level }}
               </template>
             </va-data-table>
-          </va-tabs>
+          </va-card-content>
         </va-card>
       </div>
     </div>

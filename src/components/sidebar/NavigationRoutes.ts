@@ -41,7 +41,7 @@ export default {
       },
     },
     {
-      name: 'assembly-list',
+      name: 'assemblies',
       displayName: 'menu.assemblies',
       meta: {
         icon: 'library_books',

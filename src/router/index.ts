@@ -26,28 +26,18 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../pages/taxons/Taxon.vue'),
   },
   {
-    name: 'assemblies',
     path: '/assemblies',
+    name: 'assemblies',
     component: () => import('../pages/assemblies/AssemblyPage.vue'),
-    children: [
-      {
-        name: 'assembly-list',
-        path: '',
-        component: () => import('../pages/assemblies/Assemblies.vue'),
-        meta: {
-          name: 'assemblies',
-        },
-      },
-      {
-        name: 'assembly',
-        path: ':accession',
-        props: true,
-        component: () => import('../pages/assemblies/Assembly.vue'),
-        meta: {
-          name: 'assemblies',
-        },
-      },
-    ],
+  },
+  {
+    path: '/assemblies/:accession',
+    name: 'assembly',
+    props: true,
+    component: () => import('../pages/assemblies/AssemblyDetails.vue'),
+    meta: {
+      name: 'assemblies',
+    },
   },
   {
     name: 'reads',

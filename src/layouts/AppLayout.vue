@@ -15,9 +15,9 @@
       </div>
       <div class="app-layout__page">
         <div class="layout fluid va-gutter-5">
-          <router-view v-slot="{ Component, route }">
+          <router-view v-slot="{ Component }">
             <Transition name="fade">
-              <component :is="Component" :key="route.path" />
+              <component :is="Component" />
             </Transition>
           </router-view>
         </div>

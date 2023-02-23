@@ -1,4 +1,13 @@
 <template>
+  <va-breadcrumbs class="va-title" color="primary">
+    <va-breadcrumbs-item :to="{ name: 'assemblies' }" label="assemblies" />
+    <va-breadcrumbs-item
+      v-if="router.currentRoute.value.name === 'assembly'"
+      active
+      :label="router.currentRoute.value.params.accession"
+    />
+  </va-breadcrumbs>
+  <va-divider />
   <div v-if="assembly.metadata">
     <div class="row row-equal justify-space-between">
       <div class="flex">
@@ -111,7 +120,9 @@
   import Jbrowse2 from '../../components/genome-browser/Jbrowse2.vue'
   import { AssemblyAdapter } from '../../data/types'
   import Metadata from '../../components/ui/Metadata.vue'
+  import { useRouter } from 'vue-router'
 
+  const router = useRouter()
   const props = defineProps({
     accession: String,
   })

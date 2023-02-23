@@ -22,14 +22,14 @@
       <div class="flex lg3 md3 sm12 xs12">
         <Suspense>
           <PieChart
-            :field="'metadata.assembly_level'"
-            :model="'assemblies'"
-            :title="'assembly levels'"
+            :field="'insdc_status'"
+            :model="'organisms'"
+            :title="'INSDC Submission status'"
             :label="'Assemblies by assembly level'"
           />
         </Suspense>
       </div>
-      <div class="flex lg6 md6 sm12 xs12">
+      <!-- <div class="flex lg6 md6 sm12 xs12">
         <Suspense>
           <DateLineChart
             :label="'Assemblies'"
@@ -39,13 +39,13 @@
             :color="'#2c82e0'"
           />
         </Suspense>
-      </div>
+      </div> -->
       <div class="flex lg3 md3 sm12 xs12">
         <Suspense>
           <ContributorList
-            :field="'metadata.submitter'"
-            :model="'assemblies'"
-            :title="'Submitters'"
+            :field="'countries'"
+            :model="'organisms'"
+            :title="'Countries'"
             @list-created="getSubmitters"
           />
         </Suspense>
