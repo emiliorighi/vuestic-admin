@@ -81,7 +81,6 @@
 
   const createMap = () => {
     const root = am5.Root.new(mapRef.value)
-
     root.setThemes([am5themes_Animated.new(root)])
 
     const chart = root.container.children.push(

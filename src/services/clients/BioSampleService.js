@@ -9,6 +9,12 @@ class BioSampleService {
   getBioSample(accession) {
     return base.get(`/biosamples/${accession}`)
   }
+  getBioSampleRelatedData(accession, model) {
+    return base.get(`/biosamples/${accession}/${model}`)
+  }
+  getBioSampleBioProjects(accession) {
+    return base.get(`/biosamples/${accession}/bioprojects`)
+  }
   importBioSample(accession) {
     return base.post(`/biosamples/${accession}`)
   }

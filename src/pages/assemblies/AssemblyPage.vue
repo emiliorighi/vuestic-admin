@@ -1,12 +1,7 @@
 <template>
   <div>
     <va-breadcrumbs class="va-title" color="primary">
-      <va-breadcrumbs-item :to="{ name: 'assemblies' }" label="assemblies" />
-      <va-breadcrumbs-item
-        v-if="router.currentRoute.value.name === 'assembly'"
-        active
-        :label="router.currentRoute.value.params.accession"
-      />
+      <va-breadcrumbs-item active :to="{ name: 'assemblies' }" label="assemblies" />
     </va-breadcrumbs>
     <va-divider />
     <AssemblyInfoBlock />

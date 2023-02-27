@@ -7,6 +7,7 @@
       :label="router.currentRoute.value.params.accession"
     />
   </va-breadcrumbs>
+  <va-divider />
   <div v-if="showData">
     <div class="row row-equal justify-space-between">
       <div class="flex">
@@ -17,11 +18,14 @@
               biosample.scientific_name
             }}</va-button>
           </div>
-          <div v-for="(dt, index) in validData" :key="index" class="flex">
-            <va-button-dropdown v-if="biosample[dt.key].length" round preset="primary">
-              <template #label> <va-icon :name="dt.icon" size="small" /> {{ dt.title }} </template>
-              <List :route="dt.route" :list="biosample[dt.key]" />
-            </va-button-dropdown>
+          <div v-if="biosample.metadata['sample derived from']" class="flex">
+            <va-button
+              :to="{ name: 'biosample', params: { accession: biosample.metadata['sample derived from'] } }"
+              preset="primary"
+              icon="hub"
+            >
+              {{ biosample.metadata['sample derived from'] }}</va-button
+            >
           </div>
         </div>
       </div>
@@ -122,18 +126,24 @@
         </va-card>
       </div>
     </div>
-    <va-card-title>metatada</va-card-title>
     <div class="row row-equal">
-      <div class="flex lg6 md6 sm12 xs12">
-        <va-card-content style="max-height: 350px; overflow-y: scroll">
-          <Metadata :metadata="biosample.metadata" />
-        </va-card-content>
+      <div v-if="validData.length" class="flex lg6 md6 sm12 xs12">
+        <Suspense>
+          <RelatedDataCard
+            :id="biosample.accession"
+            :request="BioSampleService.getBioSampleRelatedData"
+            :related-data="validData"
+          />
+        </Suspense>
+      </div>
+      <div v-if="bioprojects.length" class="flex lg6 md6 sm12 xs12">
+        <BioProjectsCard :bioprojects="bioprojects" />
       </div>
       <div
         v-if="biosample.latitude && biosample.longitude && Number(biosample.latitude) && Number(biosample.longitude)"
-        class="flex lg6 md6 sm12 xs12"
+        class="flex lg12 md12 sm12 xs12"
       >
-        <va-card>
+        <va-card style="min-height: 300px">
           <LeafletMap
             :latitude="Number(biosample.latitude)"
             :longitude="Number(biosample.longitude)"
@@ -141,9 +151,15 @@
           />
         </va-card>
       </div>
+      <div class="flex lg12 md12 sm12 xs12">
+        <va-card-title>metatada</va-card-title>
+        <va-card-content>
+          <Metadata :metadata="biosample.metadata" />
+        </va-card-content>
+      </div>
     </div>
   </div>
-  <div v-else>
+  <div v-else-if="error">
     <h3 class="va-h3">
       {{ error }}
     </h3>
@@ -151,12 +167,13 @@
 </template>
 <script setup lang="ts">
   import BioSampleService from '../../services/clients/BioSampleService'
-  import { computed, onMounted, ref, watch } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { AxiosResponse } from 'axios'
   import Metadata from '../../components/ui/Metadata.vue'
-  import List from '../../components/ui/List.vue'
   import LeafletMap from '../../components/maps/LeafletMap.vue'
   import { useRouter } from 'vue-router'
+  import RelatedDataCard from '../../components/ui/RelatedDataCard.vue'
+  import BioProjectsCard from '../../components/ui/BioProjectsCard.vue'
 
   const router = useRouter()
   const showData = ref(false)
@@ -165,11 +182,14 @@
     accession: String,
   })
 
+  const bioprojects = ref([])
   watch(
     () => props.accession,
     async (value) => {
       try {
+        showData.value = false
         getBioSample(await BioSampleService.getBioSample(props.accession))
+        bioprojects.value = [...(await BioSampleService.getBioSampleBioProjects(props.accession)).data]
         showData.value = true
       } catch (e) {
         error.value = props.accession + ' ' + e.response.data.message
@@ -183,27 +203,31 @@
       icon: 'hubs',
       key: 'sub_samples',
       route: 'biosample',
+      columns: ['accession', 'organism_part'],
     },
     {
       title: 'Related Reads',
       icon: 'widgets',
       key: 'experiments',
       route: 'read',
+      columns: ['experiment_accession', 'instrument_platform'],
     },
     {
       title: 'Related Assemblies',
       icon: 'library_books',
       key: 'assemblies',
       route: 'assembly',
+      columns: ['accession', 'assembly_name', 'assembly_level'],
     },
   ]
   const biosample = ref({})
 
-  const validData = ref()
+  const validData = ref([])
 
   onMounted(async () => {
     try {
       getBioSample(await BioSampleService.getBioSample(props.accession))
+      bioprojects.value = [...(await BioSampleService.getBioSampleBioProjects(props.accession)).data]
       showData.value = true
     } catch (e) {
       error.value = props.accession + ' ' + e.response.data.message

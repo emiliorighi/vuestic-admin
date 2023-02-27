@@ -14,17 +14,7 @@
       </div>
     </template>
     <template #center>
-      <div class="app-navbar-center">
-        <va-button
-          href="https://github.com/epicmaxco/vuestic-admin"
-          color="#000000"
-          class="app-navbar-center__github-button"
-          icon="github"
-          target="_blank"
-        >
-          {{ t('navbar.repository') }}
-        </va-button>
-      </div>
+      <div class="app-navbar-center"></div>
     </template>
     <template #right>
       <app-navbar-actions class="app-navbar__actions md5 lg4" :user-name="userName" />

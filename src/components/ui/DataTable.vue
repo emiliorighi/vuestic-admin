@@ -31,6 +31,9 @@
     <template #cell(submitter)="{ rowData }">
       {{ rowData.metadata.submitter }}
     </template>
+    <template #cell(image)="{ rowData }">
+      <va-avatar :src="rowData.image" />
+    </template>
     <template #cell(chromosomes)="{ rowData }">{{ rowData.chromosomes.length || '' }}</template>
     <template #cell(accession)="{ rowData }">
       <va-chip

@@ -24,7 +24,6 @@ export const useGlobalStore = defineStore('global', {
       this.userName = userName
     },
     async login() {
-      console.log('hello')
       try {
         const response = await AuthService.login({ name: this.userName, password: this.userPassword })
         if (response.status === 200) this.isAuthenticated = true

@@ -3,17 +3,20 @@ import http from '../../http-axios'
 const base = http.base
 
 class TaxonService {
-  getTaxon(name) {
-    return base.get(`/taxons/${name}`)
+  getTaxon(taxid) {
+    return base.get(`/taxons/${taxid}`)
   }
-  getTaxonCoordinates(name) {
-    return base.get(`/taxons/${name}/coordinates`)
+  getTaxonCoordinates(taxid) {
+    return base.get(`/taxons/${taxid}/coordinates`)
   }
   getTaxons(params) {
     return base.get('/taxons', { params: params })
   }
   getTree(node) {
     return base.get(`/tree/${node}`)
+  }
+  getTaxonChildren(taxid) {
+    return base.get(`/taxons/${taxid}/children`)
   }
 }
 

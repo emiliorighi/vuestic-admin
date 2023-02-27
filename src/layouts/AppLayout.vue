@@ -3,9 +3,6 @@
     <navbar />
     <div class="app-layout__content">
       <div class="app-layout__sidebar-wrapper" :class="{ minimized: isSidebarMinimized }">
-        <div v-if="isFullScreenSidebar" class="d-flex justify-end">
-          <va-button class="px-4 py-4" icon="md_close" preset="plain" color="dark" @click="onCloseSidebarButtonClick" />
-        </div>
         <sidebar
           :width="sidebarWidth"
           :minimized="isSidebarMinimized"
@@ -15,9 +12,9 @@
       </div>
       <div class="app-layout__page">
         <div class="layout fluid va-gutter-5">
-          <router-view v-slot="{ Component, route }">
+          <router-view v-slot="{ Component }">
             <Transition name="fade">
-              <component :is="Component" :key="route.name" />
+              <component :is="Component" />
             </Transition>
           </router-view>
         </div>
@@ -39,10 +36,10 @@
   const GlobalStore = useGlobalStore()
   const inputType = ref('password')
 
-  const mobileBreakPointPX = 640
+  const mobileBreakPointPX = 400
   const tabletBreakPointPX = 768
 
-  const sidebarWidth = ref('16rem')
+  const sidebarWidth = ref('100wv')
   const sidebarMinimizedWidth = ref(undefined)
 
   const isMobile = ref(false)
@@ -88,8 +85,8 @@
 </script>
 
 <style lang="scss">
-  $mobileBreakPointPX: 640px;
-  $tabletBreakPointPX: 768px;
+  $mobileBreakPointPX: 350px;
+  $tabletBreakPointPX: 640px;
 
   .app-layout {
     height: 100vh;

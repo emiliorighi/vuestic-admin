@@ -26,45 +26,45 @@
     </div>
     <div class="row row-equal">
       <!-- <div v-if="organism.local_samples.length" class="flex">
-        <va-card class="mb-4" color="warning">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ organism.local_samples.length }}</h2>
-            <p style="color: white">Local Samples</p>
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="organism.biosamples.length" class="flex">
-        <va-card class="mb-4" color="success">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ organism.biosamples.length }}</h2>
-            <p style="color: white">BioSamples</p>
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="organism.experiments.length" class="flex">
-        <va-card class="mb-4" color="primary">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ organism.experiments.length }}</h2>
-            <p style="color: white">Reads</p>
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="organism.assemblies.length" class="flex">
-        <va-card class="mb-4" color="secondary">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ organism.assemblies.length }}</h2>
-            <p style="color: white">Assemblies</p>
-          </va-card-content>
-        </va-card>
-      </div>
-      <div v-if="organism.annotations.length" class="flex">
-        <va-card class="mb-4" color="secondary">
-          <va-card-content>
-            <h2 class="va-h4 ma-0" style="color: white">{{ organism.annotations.length }}</h2>
-            <p style="color: white">Annotations</p>
-          </va-card-content>
-        </va-card>
-      </div> -->
+          <va-card class="mb-4" color="warning">
+            <va-card-content>
+              <h2 class="va-h4 ma-0" style="color: white">{{ organism.local_samples.length }}</h2>
+              <p style="color: white">Local Samples</p>
+            </va-card-content>
+          </va-card>
+        </div>
+        <div v-if="organism.biosamples.length" class="flex">
+          <va-card class="mb-4" color="success">
+            <va-card-content>
+              <h2 class="va-h4 ma-0" style="color: white">{{ organism.biosamples.length }}</h2>
+              <p style="color: white">BioSamples</p>
+            </va-card-content>
+          </va-card>
+        </div>
+        <div v-if="organism.experiments.length" class="flex">
+          <va-card class="mb-4" color="primary">
+            <va-card-content>
+              <h2 class="va-h4 ma-0" style="color: white">{{ organism.experiments.length }}</h2>
+              <p style="color: white">Reads</p>
+            </va-card-content>
+          </va-card>
+        </div>
+        <div v-if="organism.assemblies.length" class="flex">
+          <va-card class="mb-4" color="secondary">
+            <va-card-content>
+              <h2 class="va-h4 ma-0" style="color: white">{{ organism.assemblies.length }}</h2>
+              <p style="color: white">Assemblies</p>
+            </va-card-content>
+          </va-card>
+        </div>
+        <div v-if="organism.annotations.length" class="flex">
+          <va-card class="mb-4" color="secondary">
+            <va-card-content>
+              <h2 class="va-h4 ma-0" style="color: white">{{ organism.annotations.length }}</h2>
+              <p style="color: white">Annotations</p>
+            </va-card-content>
+          </va-card>
+        </div> -->
       <div class="flex lg6 md6 sm12 xs12">
         <va-card>
           <va-card-title> taxonomic lineage </va-card-title>
@@ -116,25 +116,25 @@
       </div>
     </div>
     <!-- <div class="row row-equal">
-      <div class="flex lg6 md6 sm12 xs12">
-        <va-card-title>metatada</va-card-title>
-        <va-card-content style="max-height: 350px; overflow-y: scroll">
-          <Metadata :metadata="biosample.metadata" />
-        </va-card-content>
-      </div>
-      <div
-        v-if="biosample.latitude && biosample.longitude && Number(biosample.latitude) && Number(biosample.longitude)"
-        class="flex lg6 md6 sm12 xs12"
-      >
-        <va-card>
-          <LeafletMap
-            :latitude="Number(biosample.latitude)"
-            :longitude="Number(biosample.longitude)"
-            :html="`${biosample.accession}`"
-          />
-        </va-card>
-      </div>
-    </div> -->
+        <div class="flex lg6 md6 sm12 xs12">
+          <va-card-title>metatada</va-card-title>
+          <va-card-content style="max-height: 350px; overflow-y: scroll">
+            <Metadata :metadata="biosample.metadata" />
+          </va-card-content>
+        </div>
+        <div
+          v-if="biosample.latitude && biosample.longitude && Number(biosample.latitude) && Number(biosample.longitude)"
+          class="flex lg6 md6 sm12 xs12"
+        >
+          <va-card>
+            <LeafletMap
+              :latitude="Number(biosample.latitude)"
+              :longitude="Number(biosample.longitude)"
+              :html="`${biosample.accession}`"
+            />
+          </va-card>
+        </div>
+      </div> -->
   </div>
   <div v-else>
     <h3 class="va-h3">

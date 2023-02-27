@@ -1,6 +1,16 @@
 <template>
   <div class="row row-equal">
-    <div class="flex lg4 md4 sm12 xs12">
+    <div class="flex lg3 md3 sm12 xs12">
+      <Suspense>
+        <ContributorList
+          :field="'metadata.GAL'"
+          :model="'biosamples'"
+          :title="'Genome Aquisition Labs (GAL)'"
+          @list-created="getSubmitters"
+        />
+      </Suspense>
+    </div>
+    <div class="flex lg6 md6 sm12 xs12">
       <Suspense>
         <DateLineChart
           :label="'BioSamples'"
@@ -11,17 +21,7 @@
         />
       </Suspense>
     </div>
-    <div class="flex lg4 md4 sm12 xs12">
-      <Suspense>
-        <ContributorList
-          :field="'metadata.GAL'"
-          :model="'biosamples'"
-          :title="'Genome Aquisition Labs (GAL)'"
-          @list-created="getSubmitters"
-        />
-      </Suspense>
-    </div>
-    <div class="flex lg4 md4 sm12 xs12">
+    <div class="flex lg3 md3 sm12 xs12">
       <va-card class="px-3">
         <va-card-title> Habitats </va-card-title>
         <va-card-content style="max-height: 350px; overflow: scroll">

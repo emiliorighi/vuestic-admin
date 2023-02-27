@@ -293,7 +293,7 @@
   },
   "menu": {
     "auth": "Auth",
-
+    "sequencingStatus": "Sequencing Status",
     "bioprojects": "BioProjects",
     "taxons": "Taxonomy",
     "assemblies": "Assemblies",

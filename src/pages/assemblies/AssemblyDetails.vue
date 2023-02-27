@@ -98,16 +98,16 @@
       </div>
     </div>
     <div class="row row-equal">
-      <div class="flex lg4 md4 sm12 xs12">
-        <va-card-title>metatada</va-card-title>
-        <va-card-content>
-          <Metadata :metadata="assembly.metadata" />
-        </va-card-content>
-      </div>
-      <div v-if="showJBrowse" class="flex lg8 md8 sm12 xs12">
+      <div v-if="showJBrowse" class="flex lg12 md12 sm12 xs12">
         <va-card-title> genome browser </va-card-title>
         <va-card-content>
           <Jbrowse2 :assembly="jbrowse.assembly" />
+        </va-card-content>
+      </div>
+      <div class="flex lg12 md12 sm12 xs12">
+        <va-card-title>metatada</va-card-title>
+        <va-card-content>
+          <Metadata :metadata="assembly.metadata" />
         </va-card-content>
       </div>
     </div>

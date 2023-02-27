@@ -22,21 +22,32 @@ export default {
       name: 'bioprojects',
       displayName: 'menu.bioprojects',
       meta: {
-        icon: 'science',
+        icon: 'fa-diagram-project',
       },
     },
     {
       name: 'taxons',
       displayName: 'menu.taxons',
       meta: {
-        icon: 'tenancy',
+        icon: 'fa-circle-nodes',
       },
     },
+    // {
+    //   name: 'organisms',
+    //   displayName: 'menu.organisms',
+    //   meta: {
+    //     icon: 'fa-paw',
+    //     name: 'organisms',
+    //   },
+    //   children:[
+    //     name:
+    //   ]
+    // },
     {
       name: 'organism-list',
       displayName: 'menu.organisms',
       meta: {
-        icon: 'pets',
+        icon: 'fa-paw',
         name: 'organisms',
       },
     },
@@ -44,7 +55,7 @@ export default {
       name: 'assemblies',
       displayName: 'menu.assemblies',
       meta: {
-        icon: 'library_books',
+        icon: 'fa-dna',
         name: 'assemblies',
       },
     },
@@ -52,7 +63,7 @@ export default {
       name: 'reads',
       displayName: 'menu.reads',
       meta: {
-        icon: 'widgets',
+        icon: 'fa-file-lines',
         name: 'reads',
       },
     },
@@ -60,8 +71,16 @@ export default {
       name: 'biosamples',
       displayName: 'menu.biosamples',
       meta: {
-        icon: 'hub',
+        icon: 'fa-vial',
         name: 'biosamples',
+      },
+    },
+    {
+      name: 'status',
+      displayName: 'menu.sequencingStatus',
+      meta: {
+        icon: 'fa-list-check',
+        name: 'status',
       },
     },
     {

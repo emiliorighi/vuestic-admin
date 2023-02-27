@@ -13,6 +13,7 @@
   import { useGlobalStore } from '../../stores/global-store'
 
   const GlobalStore = useGlobalStore()
+
   withDefaults(
     defineProps<{
       width?: string
@@ -22,7 +23,7 @@
       minimizedWidth?: string
     }>(),
     {
-      width: '16rem',
+      width: '100wv',
       color: 'secondary',
       animated: true,
       minimized: true,
@@ -39,6 +40,7 @@
 
 <style lang="scss">
   .va-sidebar {
+    width: 100%;
     &__menu {
       padding: 2rem 0;
     }

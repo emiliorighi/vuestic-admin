@@ -11,6 +11,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../pages/admin/dashboard/Dashboard.vue'),
   },
   {
+    name: 'home',
+    path: '/home',
+    component: () => import('../pages/home/Home.vue'),
+  },
+  {
     name: 'login',
     path: '/login',
     component: () => import('../pages/auth/login/Login.vue'),
@@ -90,6 +95,11 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
     ],
+  },
+  {
+    name: 'status',
+    path: '/status',
+    component: () => import('../pages/status/StatusPage.vue'),
   },
   {
     name: 'cesium',
