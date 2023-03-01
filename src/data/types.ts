@@ -45,6 +45,7 @@ export interface OrganismSearchForm extends SearchForm {
   parent_taxid: string
   bioproject: string
   target_list_status: string
+  country: string
 }
 
 export type BioSampleSearchForm = SearchForm

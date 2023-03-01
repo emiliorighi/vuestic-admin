@@ -1,12 +1,13 @@
 <template>
   <div>
     <p class="va-title">stats</p>
+    <BioProjectsListBlock />
     <div class="row row-equal">
       <div class="flex lg8 md8 sm12 xs12">
         <va-card>
-          <va-card-title>
+          <va-card-content>
             <div class="row justify-space-between">
-              <div class="flex">INSDC Submitted data</div>
+              <div class="flex va-title">INSDC Submitted data</div>
               <div class="flex lg4 md4">
                 <va-select
                   v-model="selectedModel"
@@ -17,7 +18,7 @@
                 />
               </div>
             </div>
-          </va-card-title>
+          </va-card-content>
           <!-- <va-card-title>
             INSDC submission contributions
           </va-card-title>
@@ -30,7 +31,7 @@
             </va-select >
           </va-card-content> -->
           <va-card-content v-if="chartData" class="chart">
-            <va-chart :options="chartOptions" :data="chartData" type="horizontal-bar" />
+            <va-chart :options="chartOptions" :data="chartData" type="bar" />
           </va-card-content>
         </va-card>
       </div>
@@ -126,7 +127,7 @@
   import colors from '../../data/colors'
   import CesiumNode from '../../components/maps/CesiumNode.vue'
   import CesiumCountries from '../../components/maps/CesiumCountries.vue'
-
+  import BioProjectsListBlock from './BioProjectsListBlock.vue'
   const selectedModel = ref('biosamples')
   const rootProject = 'PRJNA533106'
   const selectedBioproject = ref({

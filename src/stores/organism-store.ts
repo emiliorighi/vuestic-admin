@@ -12,6 +12,7 @@ const initSearchForm: OrganismSearchForm = {
   filter_option: '',
   sort_column: '',
   sort_order: '',
+  country: '',
 }
 const initOrganismForm = {
   taxid: null,

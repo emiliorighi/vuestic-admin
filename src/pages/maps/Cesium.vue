@@ -45,11 +45,17 @@
             </div>
           </va-card-title>
           <va-card-content style="max-height: 50vh; overflow: scroll">
-            <va-list fit>
-              <va-list-item v-for="(organism, index) in selectedCountry.organisms" :key="index" class="list__item">
+            <va-list>
+              <va-list-item
+                v-for="(organism, index) in selectedCountry.organisms"
+                :key="index"
+                tag="li"
+                :to="{ name: 'organism', params: { taxid: organism.taxid } }"
+                class="list__item"
+              >
                 <va-list-item-section avatar>
                   <va-avatar>
-                    <img :src="organism.image" />
+                    <img :src="organism.image" size="large" />
                   </va-avatar>
                 </va-list-item-section>
 
@@ -62,6 +68,31 @@
                     {{ organism.insdc_common_name }}
                   </va-list-item-label>
                 </va-list-item-section>
+                <va-list-item-section v-if="hasINSDCData(organism)" icon>
+                  <div v-if="organism.biosamples.length" style="padding: 5px">
+                    <va-icon style="padding;:5px" name="fa-vial" color="background-tertiary" size="small" />
+                  </div>
+                  <div v-if="organism.experiments.length" style="padding: 5px">
+                    <va-icon name="fa-file-lines" color="background-tertiary" size="small" />
+                  </div>
+                  <div v-if="organism.assemblies.length" style="padding: 5px">
+                    <va-icon name="fa-dna" color="background-tertiary" size="small" />
+                  </div>
+                </va-list-item-section>
+                <!-- <va-list-item-section v-if="organism.assemblies.length" icon>
+                    <va-icon
+                      name="fa-dna"
+                      color="background-tertiary"
+                      size="small"
+                    />
+                  </va-list-item-section>
+                  <va-list-item-section v-if="organism.experiments.length" icon>
+                    <va-icon
+                      name="fa-file-lines"
+                      color="background-tertiary"
+                      size="small"
+                    />
+                  </va-list-item-section> -->
               </va-list-item>
             </va-list>
           </va-card-content>
@@ -154,8 +185,13 @@
   async function handlePagination(offset: number) {
     pagination.value.offset = offset
     const { data } = await OrganismService.getOrganisms({ country: selectedCountry.value.id, ...pagination.value })
+    selectedCountry.value.organisms = []
     selectedCountry.value.organisms = [...data.data]
     selectedCountry.value.total = data.total
+  }
+
+  function hasINSDCData(org) {
+    return org.biosamples.length || org.experiments.length || org.assemblies.length
   }
   // onBeforeUnmount(() => {
   //     if(viewer){
@@ -164,14 +200,13 @@
   //     }
   // })
 </script>
-<style scoped>
+<style lang="scss" scoped>
   #infobox {
     display: block;
     position: absolute;
     top: 50px;
     z-index: 2;
-    width: 40%;
-    max-width: 480px;
+    width: 300px;
     right: 0;
     overflow: scroll;
   }
@@ -192,5 +227,23 @@
     height: 80vh;
     width: inherit;
     position: relative;
+  }
+
+  .list__item + .list__item {
+    margin-top: 20px;
+  }
+  .list-enter-active,
+  .list-leave-active {
+    transition: all 0.5s ease;
+  }
+  .list-enter-from,
+  .list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  .row-equal .flex {
+    .va-card {
+      height: 100%;
+    }
   }
 </style>

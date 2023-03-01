@@ -84,7 +84,11 @@
       </div>
     </div>
 
-    <div class="row row-equal"></div>
+    <div class="row row-equal">
+      <div class="flex lg12 md12 sm12 xs12">
+        <SankeyINSDC :taxid="organism.taxid" />
+      </div>
+    </div>
     <div class="row row-equal">
       <div v-if="organism.image_urls.length" class="flex lg4 md4">
         <va-card>
@@ -92,6 +96,7 @@
           <va-carousel stateful :items="organism.image_urls"> </va-carousel>
         </va-card>
       </div>
+      <div class="flex lg4 md4"></div>
 
       <div v-if="organism.publications.length" class="flex"></div>
       <div v-if="organism.bioprojects.length" class="flex">
@@ -148,6 +153,7 @@
   import LeafletMap from '../../components/maps/LeafletMap.vue'
   import Metadata from '../../components/ui/Metadata.vue'
   import RelatedDataCard from '../../components/ui/RelatedDataCard.vue'
+  import SankeyINSDC from './SankeyINSDC.vue'
 
   const showData = ref(false)
   const error = ref('')

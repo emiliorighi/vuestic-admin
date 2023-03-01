@@ -1,6 +1,37 @@
 <template>
   <div ref="cesium" class="cesium-container">
-    <div id="infobox" ref="infobox"></div>
+    <div id="infobox" ref="infobox">
+      <va-card v-if="showDetails" :to="{ name: 'organism', params: { taxid: org.taxid } }">
+        <va-card-block class="flex-nowrap" horizontal>
+          <va-image v-if="org.image" style="flex: 0 0 200px" :src="org.image" />
+          <div style="flex: auto">
+            <va-card-content>
+              <div class="row align-center">
+                <div class="flex va-h6">
+                  {{ org.scientific_name }}
+                </div>
+                <div v-if="org.countries && org.countries.length" class="flex">
+                  <div class="row">
+                    <div v-for="country in org.countries" :key="country" class="flex">
+                      <va-icon :name="`flag-icon-${country.toLowerCase()} small`"></va-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p v-if="org.insdc_common_name" class="va-text-secondary">{{ org.insdc_common_name }}</p>
+            </va-card-content>
+            <va-card-content>
+              <va-button size="small">view</va-button>
+            </va-card-content>
+          </div>
+          <va-card-actions v-if="hasINSDCData(org)" vertical align="between" style="flex: 0 auto; padding: 0px">
+            <va-button v-if="org.assemblies.length" icon="fa-dna" plain />
+            <va-button v-if="org.biosamples.length" icon="fa-vial" plain />
+            <va-button v-if="org.experiments.length" icon="fa-file-lines" plain />
+          </va-card-actions>
+        </va-card-block>
+      </va-card>
+    </div>
   </div>
 </template>
 
@@ -8,6 +39,7 @@
   import { onMounted, ref, watch } from 'vue'
   import * as Cesium from 'cesium'
   import BioProjectService from '../../services/clients/BioProjectService'
+  import OrganismService from '../../services/clients/OrganismService'
 
   const props = defineProps({
     accession: String,
@@ -19,8 +51,8 @@
   const cesium = ref(null)
   const infobox = ref(null)
   const showDetails = ref(false)
+  const org = ref({})
   let viewer = null
-
   watch(
     () => props.accession,
     async () => {
@@ -37,14 +69,29 @@
     viewer = new Cesium.Viewer(cesium.value, { timeline: false, animation: false, infoBox: false })
 
     createEntitities()
-  })
 
+    viewer.selectedEntityChanged.addEventListener(async (selectedEntity: Cesium.Entity) => {
+      if (Cesium.defined(selectedEntity)) {
+        console.log(selectedEntity)
+        const { data } = await OrganismService.getOrganism(selectedEntity.properties.taxid)
+        org.value = { ...data }
+        showDetails.value = true
+      } else {
+        org.value = {}
+        showDetails.value = false
+      }
+    })
+  })
+  function hasINSDCData(org) {
+    return org.biosamples.length || org.experiments.length || org.assemblies.length
+  }
   async function createEntitities() {
     const { data } = await BioProjectService.getBioProjectCoordinates(props.accession)
     data.forEach((org) => {
       org.locations.forEach((loc) => {
         const entity: Cesium.Entity = {
           name: org.scientific_name,
+          properties: { taxid: org.taxid },
           position: Cesium.Cartesian3.fromDegrees(loc[0], loc[1]),
           label: {
             text: org.scientific_name,
@@ -52,6 +99,12 @@
             outlineWidth: 2,
             verticalOrigin: Cesium.VerticalOrigin.TOP,
             pixelOffset: new Cesium.Cartesian2(0, 32),
+            // translucencyByDistance: new Cesium.NearFarScalar(
+            //   1.5e5,
+            //   1.0,
+            //   1.5e7,
+            //   0.0
+            // ),
           },
         }
         if (org.image) {
@@ -74,13 +127,10 @@
       })
     })
 
-    viewer.dataSourceDisplay.defaultDataSource.clustering.clusterEvent.addEventListener(function (entities, cluster) {
-      cluster.label.show = true
-      cluster.label.text = entities.length.toLocaleString()
-    })
     // viewer.dataSourceDisplay.defaultDataSource.clustering.clusterEvent
-    // viewer.dataSourceDisplay.defaultDataSource.clustering.pixelRange = 5
+    // viewer.dataSourceDisplay.defaultDataSource.clustering.pixelRange = 1
     // viewer.dataSourceDisplay.defaultDataSource.clustering.enabled = true
+
     // viewer.dataSourceDisplay.defaultDataSource.clustering.
     // console.log(viewer.dataSourceDisplay.defaultDataSource.clustering)
   }

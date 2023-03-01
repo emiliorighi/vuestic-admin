@@ -294,6 +294,8 @@
   "menu": {
     "auth": "Auth",
     "sequencingStatus": "Sequencing Status",
+    "organismsMap":"Organisms Map",
+    "countriesMap":"Countries Map",
     "bioprojects": "BioProjects",
     "taxons": "Taxonomy",
     "assemblies": "Assemblies",

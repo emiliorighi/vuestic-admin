@@ -76,25 +76,15 @@ const routes: Array<RouteRecordRaw> = [
     name: 'organisms',
     path: '/organisms',
     component: () => import('../pages/organisms/OrganismPage.vue'),
-    children: [
-      {
-        name: 'organism-list',
-        path: '',
-        component: () => import('../pages/organisms/Organisms.vue'),
-        meta: {
-          name: 'organisms',
-        },
-      },
-      {
-        name: 'organism',
-        path: ':taxid',
-        props: true,
-        component: () => import('../pages/organisms/Organism.vue'),
-        meta: {
-          name: 'organisms',
-        },
-      },
-    ],
+  },
+  {
+    name: 'organism',
+    path: '/organisms/:taxid',
+    props: true,
+    component: () => import('../pages/organisms/Organism.vue'),
+    meta: {
+      name: 'organisms',
+    },
   },
   {
     name: 'status',
@@ -110,6 +100,23 @@ const routes: Array<RouteRecordRaw> = [
     name: 'cesium-node',
     path: '/cesium-node',
     component: () => import('../pages/maps/CesiumNode.vue'),
+  },
+  {
+    name: 'maps',
+    path: '/maps',
+    component: () => import('../layouts/RouterBypass.vue'),
+    children: [
+      {
+        name: 'countries-map',
+        path: 'countries',
+        component: () => import('../pages/maps/CountriesMap.vue'),
+      },
+      {
+        name: 'organisms-map',
+        path: 'organisms',
+        component: () => import('../pages/maps/OrganismsMap.vue'),
+      },
+    ],
   },
   {
     name: 'forms',

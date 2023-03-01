@@ -44,7 +44,7 @@ export default {
     //   ]
     // },
     {
-      name: 'organism-list',
+      name: 'organisms',
       displayName: 'menu.organisms',
       meta: {
         icon: 'fa-paw',
@@ -82,6 +82,26 @@ export default {
         icon: 'fa-list-check',
         name: 'status',
       },
+    },
+    {
+      name: 'maps',
+      displayName: 'menu.maps',
+      meta: {
+        icon: 'fa-map',
+      },
+      disabled: true,
+      children: [
+        {
+          name: 'countries-map',
+          displayName: 'menu.countriesMap',
+          meta: {},
+        },
+        {
+          name: 'organisms-map',
+          displayName: 'menu.organismsMap',
+          meta: {},
+        },
+      ],
     },
     {
       name: 'forms',

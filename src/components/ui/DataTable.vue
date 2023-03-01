@@ -76,6 +76,9 @@
         {{ rowData.scientific_name || rowData.metadata.scientific_name }}</va-chip
       >
     </template>
+    <template #cell(organisms)="{ rowData }">
+      <va-chip outline size="small"> {{ rowData.leaves }}</va-chip>
+    </template>
     <template #cell(first_created)="{ rowData }">
       {{ rowData.metadata.first_created }}
     </template>

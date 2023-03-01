@@ -62,7 +62,7 @@
 
   async function getTreeData(taxid: string) {
     showTree.value = false
-    const { data } = await TaxonService.getTree(taxid)
+    const { data } = await TaxonService.getTree(taxid, { limit: 166 })
     treeData.value = data
     showTree.value = true
     return data

@@ -76,7 +76,6 @@
     viewer.dataSourceDisplay.defaultDataSource.clustering.clusterEvent.addEventListener(function (entities, cluster) {
       cluster.label.show = true
       cluster.label.text = entities.length.toLocaleString()
-      console.log('hello')
     })
     viewer.dataSourceDisplay.defaultDataSource.clustering.clusterEvent
     viewer.dataSourceDisplay.defaultDataSource.clustering.pixelRange = 5

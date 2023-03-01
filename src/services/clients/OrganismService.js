@@ -24,6 +24,10 @@ class OrganismService {
   getOrganismRelatedData(taxid, model) {
     return base.get(`/organisms/${taxid}/${model}`)
   }
+
+  getINSDCSankeyData(taxid) {
+    return base.get(`/organisms/${taxid}/sankey`)
+  }
 }
 
 export default new OrganismService()

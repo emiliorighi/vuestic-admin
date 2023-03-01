@@ -1,6 +1,14 @@
 <template>
+  <va-tabs v-model="tab" grow>
+    <template #tabs>
+      <va-tab v-for="model in statusModel" :key="model.id" :name="model.id">
+        {{ model.label }}
+      </va-tab>
+    </template>
+  </va-tabs>
+  <va-divider style="margin: 0"></va-divider>
   <div class="row row-equal">
-    <div class="flex lg4 md6 sm12 xs12">
+    <div class="flex lg12 md12 sm12 xs12">
       <va-tree-view
         :nodes="tree.root"
         track-by="taxid"
@@ -9,37 +17,19 @@
         @update:expanded="fetchNode"
       >
         <template #content="node">
-          <va-card :stripe="selectedNode.taxid === node.taxid" stripe-color="primary">
-            <va-card-block horizontal>
-              <va-card-block style="flex: auto">
-                <va-card-content>
-                  <div class="row align-center">
-                    <div class="flex">
-                      <b class="display-6">{{ node.name }}</b>
-                      <p class="text--secondary mb-0">{{ node.rank }}</p>
-                    </div>
-                    <div v-if="node.leaves" class="flex">
-                      <va-chip color="warning" size="small">{{ node.leaves }}</va-chip>
-                    </div>
-                  </div>
-                </va-card-content>
-              </va-card-block>
-              <va-card-block style="flex: auto">
-                <va-card-content>
-                  <div class="row align-center justify-end">
-                    <div class="flex">
-                      <va-button
-                        preset="secondary"
-                        icon="open_in_new"
-                        style="margin-left: auto"
-                        @click.prevent="selectNode(node)"
-                      />
-                    </div>
-                  </div>
-                </va-card-content>
-              </va-card-block>
-            </va-card-block>
-          </va-card>
+          <div @click.stop.prevent>
+            <va-collapse :header="`${node.name} (${node.rank})`">
+              <Suspense>
+                <StatusNodeDetails
+                  :key="node.taxid"
+                  :taxid="node.taxid"
+                  :columns="filteredColumns"
+                  :filters="filteredFilters"
+                  :selected-status-model="selectedStatusModel"
+                />
+              </Suspense>
+            </va-collapse>
+          </div>
           <!-- <div :class="selectedNode.taxid === node.taxid?'selected d-flex align-center':'d-flex align-center'">
                     <div style="margin-right: 0.5rem">
                       <b class="display-6">{{ node.name }}</b>
@@ -51,106 +41,15 @@
         </template>
       </va-tree-view>
     </div>
-    <div class="flex lg8 md6 sm12 xs12">
-      <h1 class="va-h3">{{ selectedNode.name }} ({{ selectedNode.rank }})</h1>
-      <va-tabs v-model="tab" grow>
-        <template #tabs>
-          <va-tab v-for="model in statusModel" :key="model.id" :name="model.id">
-            {{ model.label }}
-          </va-tab>
-        </template>
-      </va-tabs>
-      <va-divider style="margin: 0"></va-divider>
-      <div class="row row-equal">
-        <div class="flex lg3 md3 sm12 xs12">
-          <Suspense>
-            <PieChart
-              :key="counter"
-              :field="selectedStatusModel.id"
-              :model="'organisms'"
-              :title="selectedStatusModel.label"
-              :label="selectedStatusModel.label"
-              :query="query"
-            />
-          </Suspense>
-        </div>
-        <div class="flex lg9 md9 sm12 xs12">
-          <va-card>
-            <va-card-title> organisms </va-card-title>
-            <va-card-content>
-              <div class="row">
-                <div class="flex lg3 md12">
-                  <va-form tag="form" @submit.prevent="handleSubmit">
-                    <va-card-content>
-                      <div class="row align-center justify-start">
-                        <div v-for="(filter, index) in filteredFilters" :key="index" class="flex lg12 md12 sm12 xs12">
-                          <div v-if="filter.type === 'input'">
-                            <va-input
-                              v-model="statusStore.searchForm[filter.key]"
-                              :label="filter.label"
-                              :placeholder="filter.placeholder"
-                            />
-                          </div>
-                          <div v-else>
-                            <va-select
-                              v-model="statusStore.searchForm[filter.key]"
-                              :label="filter.label"
-                              :options="filter.options"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </va-card-content>
-                    <va-card-actions align="between">
-                      <va-button type="submit">Search</va-button>
-                      <va-button color="danger" @click="reset()">Reset</va-button>
-                    </va-card-actions>
-                  </va-form>
-                </div>
-                <va-divider vertical />
-                <div class="flex lg8 md12">
-                  <va-card-content>
-                    <div class="row align-center justify-space-between">
-                      <div class="flex">Total: {{ total }}</div>
-                      <div class="flex">
-                        <va-button preset="secondary" icon="fa-download"></va-button>
-                      </div>
-                    </div>
-                  </va-card-content>
-                  <va-card-content>
-                    <va-data-table :items="organisms" :columns="filteredColumns" />
-                    <div class="row align-center justify-center">
-                      <div class="flex">
-                        <va-pagination
-                          v-model="offset"
-                          :page-size="statusStore.pagination.limit"
-                          :total="total"
-                          :visible-pages="3"
-                          buttons-preset="secondary"
-                          rounded
-                          gapped
-                          border-color="primary"
-                          @update:model-value="handlePagination"
-                        />
-                      </div>
-                    </div>
-                  </va-card-content>
-                </div>
-              </div>
-            </va-card-content>
-          </va-card>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script setup lang="ts">
   import { computed, onMounted, ref, watch, reactive } from 'vue'
-  import PieChart from '../../components/charts/PieChart.vue'
   import { Filter } from '../../data/types'
   import { useStatusStore } from '../../stores/status-store'
   import OrganismService from '../../services/clients/OrganismService'
   import TaxonService from '../../services/clients/TaxonService'
+  import StatusNodeDetails from './StatusNodeDetails.vue'
 
   const rootTaxid = '131567'
   const tree = reactive({
@@ -158,11 +57,7 @@
   })
   const statusStore = useStatusStore()
   const expandendNodes = ref([])
-  const selectedNodes = ref([])
 
-  const selectedNode = ref({})
-  const counter = ref(0)
-  const query = ref({})
   const statusModel = [
     {
       id: 'insdc_status',
@@ -174,20 +69,17 @@
     },
   ]
   const columns = ['scientific_name', 'tolid_prefix', 'insdc_status', 'goat_status', 'target_list_status']
+
   const filteredColumns = computed(() => {
     if (tab.value === 'goat_status') return columns.filter((f) => f !== 'insdc_status')
     return columns.filter((f) => f !== 'goat_status' && f !== 'target_list_status')
   })
-  const offset = ref(1 + statusStore.pagination.offset)
-  const organisms = ref([])
-  const total = ref(0)
 
   onMounted(async () => {
     // const {data} = await OrganismService.getOrganisms({...statusStore.searchForm, ...statusStore.pagination})
     // organisms.value = [...data.data]
     // total.value = data.total
     await getNodeInfo(rootTaxid)
-    await selectNode(tree.root[0])
   })
 
   const filters: Filter[] = [
@@ -234,18 +126,6 @@
       type: 'select',
       options: ['long_list', 'family_representative', 'other_priority'],
     },
-    {
-      label: 'sort by',
-      key: 'sort_column',
-      type: 'select',
-      options: ['scientific_name', 'taxid', 'tolid'],
-    },
-    {
-      label: 'sort order',
-      key: 'sort_order',
-      type: 'select',
-      options: ['asc', 'desc'],
-    },
   ]
 
   const filteredFilters = computed(() => {
@@ -257,32 +137,8 @@
   const selectedStatusModel = ref(statusModel[0])
 
   watch(tab, () => {
-    counter.value++
-    reset()
     selectedStatusModel.value = { ...statusModel.find((m) => m.id === tab.value) }
   })
-
-  async function handleSubmit() {
-    statusStore.resetPagination()
-    offset.value = 1
-    const { data } = await OrganismService.getOrganisms({ ...statusStore.searchForm, ...statusStore.pagination })
-    organisms.value = [...data.data]
-    total.value = data.total
-  }
-  async function reset() {
-    offset.value = 1
-    statusStore.resetSearchForm()
-    statusStore.resetPagination()
-    const { data } = await OrganismService.getOrganisms({ ...statusStore.searchForm, ...statusStore.pagination })
-    organisms.value = [...data.data]
-    total.value = data.total
-  }
-  async function handlePagination(value: number) {
-    statusStore.pagination.offset = value - 1
-    const { data } = await OrganismService.getOrganisms({ ...statusStore.searchForm, ...statusStore.pagination })
-    organisms.value = [...data.data]
-    total.value = data.total
-  }
 
   function traverseTree(treeData, target) {
     if (!treeData.children) return
@@ -297,18 +153,19 @@
     }
   }
 
-  async function selectNode(node) {
-    offset.value = 1
-    statusStore.resetSearchForm()
-    statusStore.resetPagination()
-    selectedNode.value = { ...node }
-    statusStore.searchForm.parent_taxid = node.taxid
-    query.value.taxon_lineage = node.taxid
-    const { data } = await OrganismService.getOrganisms({ ...statusStore.searchForm, ...statusStore.pagination })
-    organisms.value = [...data.data]
-    total.value = data.total
-    counter.value++
-  }
+  //   async function selectNode(node) {
+  //     offset.value = 1
+  //     statusStore.resetSearchForm()
+  //     statusStore.resetPagination()
+  //     selectedNode.value = { ...node }
+  //     statusStore.searchForm.parent_taxid = node.taxid
+  //     query.value.taxon_lineage = node.taxid
+  //     const { data } = await OrganismService.getOrganisms({ ...statusStore.searchForm, ...statusStore.pagination })
+  //     organisms.value = [...data.data]
+  //     total.value = data.total
+  //     counter.value++
+  //   }
+
   async function fetchNode(nodeList: []) {
     if (nodeList.length < 1) return
     const nodeToFetch = nodeList.find((n) => !expandendNodes.value.includes(n))
